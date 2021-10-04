@@ -1,0 +1,6 @@
+export const mainCells = document.getElementsByClassName('main-cell')
+export const subCells = document.getElementsByClassName('sub-cell')
+export const subGrids = document.getElementsByClassName('sub-grid')
+export const settingButton = document.getElementById('setting')
+export const restartButton = document.getElementById('restart')
+export const endMessage = document.getElementById('end-message')
