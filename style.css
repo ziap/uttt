@@ -79,10 +79,10 @@ body {
   width: 92%;
   height: 92%;
   background: var(--yellow);
-  display: flex;
-  flex-wrap: wrap;
-  align-content: space-between;
-  justify-content: space-between;
+  display: grid;
+  gap: 2%;
+  grid-template: 1fr 1fr 1fr / 1fr 1fr 1fr;
+  place-items: center;
 }
 
 .sub-grid {
@@ -92,6 +92,7 @@ body {
   background: #333333;
   pointer-events: none;
   transition: background 0.2s, opacity 0.2s;
+  gap: 4%;
 }
 
 .sub-grid.active {
@@ -101,8 +102,8 @@ body {
 }
 
 .main-cell, .sub-cell {
-  width: 31.25%;
-  height: 31.25%;
+  width: 100%;
+  height: 100%;
   background: #1e1e1e;
   display: flex;
   align-items: center;
@@ -110,14 +111,12 @@ body {
 }
 
 .main-cell {
-  font-size: calc(var(--width) / 4.64);
+  font-size: calc(var(--width) / 5.25);
 }
 
 .sub-cell {
   cursor: pointer;
-  font-size: calc(var(--width) / 19);
-  width: 30%;
-  height: 30%;
+  font-size: calc(var(--width) / 22.5);
 }
 
 .main-cell.x::before, .sub-cell.x::before {
@@ -132,12 +131,12 @@ body {
 
 @keyframes main-expand {
 from {font-size: 0;}
-to {font-size: calc(var(--width) / 4.64);}
+to {font-size: calc(var(--width) / 5.25);}
 }
 
 @keyframes sub-expand {
 from {font-size: 0;}
-to {font-size: calc(var(--width) / 19);}
+to {font-size: calc(var(--width) / 22.5);}
 }
 
 .main-cell.x, .main-cell.o {
@@ -168,11 +167,11 @@ to {font-size: calc(var(--width) / 19);}
 }
 
 #end-message.x::before {
-  content: "X wins";
+  content: "X won";
 }
 
 #end-message.o::before {
-  content: "O wins";
+  content: "O won";
 }
 
 #end-message.tie::before {
