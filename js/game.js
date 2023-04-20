@@ -66,8 +66,9 @@ export default class Game {
 
       for (let j = 0; j < 9; j++) {
         const tile = ['', 'x', 'o'][board % 3]
-        if (tile) this.subCells[9 * i + j].classList.add(tile)
         board = Math.floor(board / 3)
+
+        if (tile) this.subCells[9 * i + j].classList.add(tile)
       }
     }
   }
