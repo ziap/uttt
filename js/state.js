@@ -3,7 +3,7 @@ import { SMALL_OVER, SMALL_TIE, MOVE_TABLES, WIN_TRIPLETS } from "./consts.js"
 // TODO: Implement this in WASM
 export default class State {
   constructor() {
-    this.boards = new Uint32Array(9)
+    this.boards = new Uint16Array(9)
     this.lastMove = -1
     this.currentPlayer = 0
   }

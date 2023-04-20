@@ -15,8 +15,8 @@ export const WIN_TRIPLETS = new Uint8Array([
 ])
 
 export const MOVE_TABLES = [
-  new Uint32Array(9 * SMALL_OVER),
-  new Uint32Array(9 * SMALL_OVER)
+  new Uint16Array(9 * SMALL_OVER),
+  new Uint16Array(9 * SMALL_OVER)
 ]
 
 class SmallBoard extends Uint8Array {
@@ -31,7 +31,6 @@ class SmallBoard extends Uint8Array {
       if (cell != this[WIN_TRIPLETS[i + 2]]) continue
 
       return SMALL_OVER + cell
-
     }
 
     let tie = 1
