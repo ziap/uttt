@@ -2,17 +2,17 @@ import State from './state.js'
 import { SMALL_WIN_X, SMALL_WIN_O, SMALL_TIE } from './consts.js'
 
 export default class Game {
-  /**
-   * @param {Element} element
-   */
-  constructor(element) {
-    this.mainCells = element.querySelectorAll('.main-cell')
-    this.subCells = element.querySelectorAll('.sub-cell')
-    this.subGrids = element.querySelectorAll('.sub-grid')
+  constructor() {
+    const game_root = document.querySelector('#container')
 
-    this.settingButton = element.querySelector('#setting')
-    this.restartButton = element.querySelector('#restart')
-    this.endMessage = element.querySelector('#end-message')
+    this.mainCells = game_root.querySelectorAll('.main-cell')
+    this.subCells = game_root.querySelectorAll('.sub-cell')
+    this.subGrids = game_root.querySelectorAll('.sub-grid')
+
+    this.settingButton = game_root.querySelector('#setting')
+    this.restartButton = game_root.querySelector('#restart')
+    this.endMessage = game_root.querySelector('#end-message')
+
     this.playerTurn = [true, true]
 
     this.state = new State()
