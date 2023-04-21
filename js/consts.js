@@ -41,7 +41,7 @@ for (let board = 0; board < LUT_SIZE; ++board) {
     let tmp = board
     for (let i = 0; i < 9; ++i) {
       const cell = tmp & 3
-      tmp >>>= 2
+      tmp >>= 2
 
       if (!cell) {
         WIN_TABLE[board] = 0
@@ -50,3 +50,5 @@ for (let board = 0; board < LUT_SIZE; ++board) {
     }
   }
 }
+
+// TODO: Threat masks for speeding up endgame simulation

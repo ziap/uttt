@@ -41,17 +41,16 @@ export default class Game {
     for (const elem of this.subCells) elem.className = 'sub-cell'
     for (const elem of this.subGrids) elem.className = 'sub-grid'
 
-    const gameOver = this.state.winner > 0
-
     this.endMessage.className = ['', 'x', 'o', 'tie'][this.state.winner]
 
     let global_board = this.state.boards[9]
     for (let i = 0; i < 9; ++i) {
       const cell = global_board & 3
       global_board >>= 2
+
       switch (cell) {
         case 0: {
-          if (gameOver) break
+          if (this.state.winner) break
           if (this.state.lastMove != -1 && this.state.lastMove != i) break
           this.subGrids[i].classList.add('active');
         } break
