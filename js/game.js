@@ -1,5 +1,4 @@
 import State from './state.js'
-import { SMALL_WIN_X, SMALL_WIN_O, SMALL_TIE } from './consts.js'
 
 export default class Game {
   constructor() {
@@ -42,33 +41,34 @@ export default class Game {
     for (const elem of this.subCells) elem.className = 'sub-cell'
     for (const elem of this.subGrids) elem.className = 'sub-grid'
 
-    const winner = this.state.checkWinner()
-    const gameOver = winner > 0
+    const gameOver = this.state.winner > 0
 
-    this.endMessage.className = ['', 'x', 'o', 'tie'][winner]
+    this.endMessage.className = ['', 'x', 'o', 'tie'][this.state.winner]
 
-    for (let i = 0; i < 9; i++) {
+    let global_board = this.state.boards[9]
+    for (let i = 0; i < 9; ++i) {
+      const cell = global_board & 3
+      global_board >>= 2
+      switch (cell) {
+        case 0: {
+          if (gameOver) break
+          if (this.state.lastMove != -1 && this.state.lastMove != i) break
+          this.subGrids[i].classList.add('active');
+        } break
+        case 1: this.mainCells[i].classList.add('x'); continue
+        case 2: this.mainCells[i].classList.add('o'); continue
+        default: break
+      } 
+
       let board = this.state.boards[i]
+      for (let j = 0; j < 9; ++j) {
+        const tile = ['', 'x', 'o', 'error'][board & 3]
+        board >>= 2
 
-      switch (board) {
-        case SMALL_WIN_X: this.mainCells[i].classList.add('x'); continue;
-        case SMALL_WIN_O: this.mainCells[i].classList.add('o'); continue;
-        default: break;
-      }
-
-      if (!gameOver && board < SMALL_TIE) {
-        if (this.state.lastMove == -1 || this.state.lastMove == i) {
-          this.subGrids[i].classList.add('active')
+        if (tile) {
+          console.assert(tile != 'error')
+          this.subCells[9 * i + j].classList.add(tile)
         }
-      }
-
-      board %= SMALL_TIE
-
-      for (let j = 0; j < 9; j++) {
-        const tile = ['', 'x', 'o'][board % 3]
-        board = Math.floor(board / 3)
-
-        if (tile) this.subCells[9 * i + j].classList.add(tile)
       }
     }
   }
