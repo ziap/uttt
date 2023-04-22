@@ -10,8 +10,8 @@ export default class State {
   }
 
   /**
-   * @param {number} grid
-   * @param {number} cell
+   * @param {number} grid - The local board to play in
+   * @param {number} cell - the cell inside that local board to mark
    */
   move(grid, cell) {
     if (this.lastMove != -1 && this.lastMove != grid) return
