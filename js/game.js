@@ -2,7 +2,7 @@ import State from './state.js'
 
 export default class Game {
   constructor() {
-    const game_root = document.querySelector('#container')
+      const game_root = document.querySelector('#container')
 
     this.mainCells = game_root.querySelectorAll('.main-cell')
     this.subCells = game_root.querySelectorAll('.sub-cell')

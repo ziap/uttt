@@ -20,8 +20,8 @@ for (let i = 0; i < WIN_TRIPLETS.length; ++i) {
 }
 
 const LUT_SIZE = 1 << 18
-export const WIN_TABLE = new Uint8Array(LUT_SIZE)
 
+export const WIN_TABLE = new Uint8Array(LUT_SIZE)
 for (let board = 0; board < LUT_SIZE; ++board) {
   for (let i = 0; i < WIN_TRIPLETS.length; ++i) {
     const mask_x = WIN_MASKS_X[i]
