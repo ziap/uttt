@@ -19,15 +19,15 @@ f32 uct(node_t *node) {
 }
 
 node_t *best_children(node_t *node) {
-  node_t *best_child = node->children[0];
+  node_t *best_child = node->children;
   if (!best_child->simulation_done) return best_child;
 
   f32 best_uct = uct(best_child);
 
   for (usize i = 1; i < node->children_count; ++i) {
-    if (!node->children[i]->simulation_done) return node->children[i];
+    node_t *child = node->children + i;
+    if (!child->simulation_done) return child;
 
-    node_t *child = node->children[i];
     f32 child_uct = uct(child);
     if (child_uct > best_uct) {
       best_uct = child_uct;
@@ -41,6 +41,7 @@ node_t *best_children(node_t *node) {
 void expand_node(nodes_t *nodes, node_t *node, state_t *state) {
   node->expanded = true;
   node->children_count = 0;
+  node->children = nodes->data + nodes->size;
 
   if (state->last_move == -1) {
     u32 global_board = state->boards[9];
@@ -60,8 +61,8 @@ void expand_node(nodes_t *nodes, node_t *node, state_t *state) {
 
         u32 cell_idx = popcnt(cell - 1) >> 1;
 
-        node_t *child = nodes_push(nodes, grid_idx, cell_idx, node);
-        node->children[node->children_count++] = child;
+        node->children_count++;
+        nodes_push(nodes, grid_idx, cell_idx, node);
       }
     }
   } else {
@@ -74,8 +75,8 @@ void expand_node(nodes_t *nodes, node_t *node, state_t *state) {
 
       u32 cell_idx = popcnt(cell - 1) >> 1;
 
-      node_t *child = nodes_push(nodes, state->last_move, cell_idx, node);
-      node->children[node->children_count++] = child;
+      node->children_count++;
+      nodes_push(nodes, state->last_move, cell_idx, node);
     }
   }
 }
@@ -132,7 +133,7 @@ void mcts_search(mcts_t *searcher, state_t state) {
   if (searcher->current_node->simulation_done && !state.result) {
     expand_node(&searcher->nodes, searcher->current_node, &state);
     
-    node_t *child = searcher->current_node->children[0];
+    node_t *child = searcher->current_node->children;
     searcher->current_node = child;
     state_move(&state, child->move.grid, child->move.cell);
   }
@@ -145,12 +146,10 @@ void mcts_search(mcts_t *searcher, state_t state) {
   for (;;) {
     searcher->current_node->simulation_done++;
 
-    if (current_player == PLAYER_X && result == X_WIN) {
-      searcher->current_node->simulation_won++;
-    }
-
-    if (current_player == PLAYER_O && result == O_WIN) {
-      searcher->current_node->simulation_won++;
+    if (current_player == result - 1) {
+      searcher->current_node->simulation_won++; 
+    } else {
+      searcher->current_node->simulation_won--;
     }
 
     current_player = 1 - current_player;

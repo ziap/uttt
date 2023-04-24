@@ -80,5 +80,4 @@ restartButton.addEventListener('click', () => {
 
 settingButton.addEventListener('click', () => alert('WIP'))
 updateHTML()
-
-AIMove()
+// AIMove()

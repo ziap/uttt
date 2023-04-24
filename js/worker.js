@@ -30,7 +30,7 @@
   memoryBuffer = exports.memory.buffer
 
   const state = new Uint8Array(memoryBuffer, exports.state_ptr())
-  const result = new Uint8Array(memoryBuffer, exports.result_ptr())
+  const result = new Uint8Array(memoryBuffer, exports.result_ptr(), 2)
 
   exports.init()
 
@@ -40,6 +40,6 @@
 
     exports.ai_search(BigInt(Date.now()), 1000000)
 
-    postMessage({ grid: result[0], cell: result[1] })
+    postMessage([...result])
   })
 })()

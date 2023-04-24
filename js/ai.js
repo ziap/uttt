@@ -9,8 +9,7 @@ export function GetAIMove() {
   const buf = arr.buffer
   worker.postMessage(buf, [buf])
 
-  return new Promise(resolve => worker.addEventListener('message', e => {
-    const { grid, cell } = e.data
-    resolve([grid, cell])
-  }, {once: true}))
+  return new Promise(resolve => {
+    worker.addEventListener('message', e => resolve(e.data), {once: true})
+  })
 }

@@ -16,11 +16,11 @@ struct node_t {
 
   bool expanded;
   usize children_count;
-  node_t *children[81];
+  node_t *children;
   node_t *parent;
 
-  u32 simulation_done;
-  u32 simulation_won;
+  i32 simulation_done;
+  i32 simulation_won;
 };
 
 extern node_t node_new(i8, i8, node_t*);
