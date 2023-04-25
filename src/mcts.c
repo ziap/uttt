@@ -139,17 +139,15 @@ void mcts_search(mcts_t *searcher, state_t state) {
   }
 
   // Simulation
+  player_t current_player = 1 - state.player;
   result_t result = playout(&state, &searcher->rng_state);
 
   // Back-propagation
-  player_t current_player = 1 - state.player;
   for (;;) {
     searcher->current_node->simulation_done++;
 
     if (current_player == result - 1) {
       searcher->current_node->simulation_won++; 
-    } else {
-      searcher->current_node->simulation_won--;
     }
 
     current_player = 1 - current_player;
@@ -167,8 +165,20 @@ move_t search(mcts_t *mcts, state_t *state, u64 seed, u32 simulation_count) {
 
   assert(mcts->current_node->children_count, "ERROR: No moves available");
 
-  node_t *child = best_children(mcts->current_node);
-  dump((f32)child->simulation_won / (f32)child->simulation_done);
+  node_t *selected = mcts->current_node->children;
+  f32 best_score = (f32)selected->simulation_won / (f32)selected->simulation_done;
 
-  return child->move;
+  for (usize i = 0; i < mcts->current_node->children_count; ++i) {
+    node_t *child = mcts->current_node->children + i;
+
+    f32 score = (f32)child->simulation_won / (f32)child->simulation_done;
+
+    if (score > best_score) {
+      best_score = score;
+      selected = child;
+    }
+  }
+  dump((f32)selected->simulation_won / (f32)selected->simulation_done);
+
+  return selected->move;
 }
