@@ -12,8 +12,10 @@
 #define memcpy __builtin_memcpy
 
 #define popcnt __builtin_popcount
+#define ctz __builtin_ctz
+#define clz __builtin_clz
 #define sqrtf __builtin_sqrtf
-#define logf __builtin_logf
+#define log(x) ((f32)(31 - clz(x)) * 0.6931471805599453f) // log2(x) / log2(e)
 
 typedef uint8_t u8;
 typedef uint16_t u16;

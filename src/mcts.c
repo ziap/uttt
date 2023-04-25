@@ -8,17 +8,17 @@ void mcts_init(mcts_t *searcher, u64 seed) {
 }
 
 f32 uct(node_t *node) {
-  const f32 c = 1.4142135623730951; // sqrt2
+  const f32 c = 1.4142135623730951f; // sqrt2
   f32 n = node->simulation_done;
   f32 w = node->simulation_won;
-  f32 t = node->parent ? logf(node->parent->simulation_done) : 0;
+  f32 t = node->parent ? log(node->parent->simulation_done) : 0;
 
   f32 uct = (w / n) + c * sqrtf(t / n);
 
   return uct;
 }
 
-node_t *best_children(node_t *node) {
+node_t *select_child(node_t *node) {
   node_t *best_child = node->children;
   if (!best_child->simulation_done) return best_child;
 
@@ -39,8 +39,6 @@ node_t *best_children(node_t *node) {
 }
 
 void expand_node(nodes_t *nodes, node_t *node, state_t *state) {
-  node->expanded = true;
-  node->children_count = 0;
   node->children = nodes->data + nodes->size;
 
   if (state->last_move == -1) {
@@ -51,7 +49,7 @@ void expand_node(nodes_t *nodes, node_t *node, state_t *state) {
       u32 grid = global_mask & -global_mask;
       global_mask ^= grid;
 
-      u32 grid_idx = popcnt(grid - 1) >> 1;
+      u32 grid_idx = ctz(grid) >> 1;
       u32 board = state->boards[grid_idx];
       u32 mask = (~(board | (board >> 1))) & 0x15555u;
 
@@ -59,7 +57,7 @@ void expand_node(nodes_t *nodes, node_t *node, state_t *state) {
         u32 cell = mask & -mask;
         mask ^= cell;
 
-        u32 cell_idx = popcnt(cell - 1) >> 1;
+        u32 cell_idx = ctz(cell) >> 1;
 
         node->children_count++;
         nodes_push(nodes, grid_idx, cell_idx, node);
@@ -73,7 +71,7 @@ void expand_node(nodes_t *nodes, node_t *node, state_t *state) {
       u32 cell = mask & -mask;
       mask ^= cell;
 
-      u32 cell_idx = popcnt(cell - 1) >> 1;
+      u32 cell_idx = ctz(cell) >> 1;
 
       node->children_count++;
       nodes_push(nodes, state->last_move, cell_idx, node);
@@ -92,7 +90,7 @@ result_t playout(state_t *state, rng_t *rng) {
       for (usize i = 0; i < idx; ++i) mask &= (mask - 1);
       mask &= -mask;
 
-      grid = popcnt(mask - 1) >> 1;
+      grid = ctz(mask) >> 1;
     }
 
     u32 board = state->boards[grid];
@@ -111,7 +109,7 @@ result_t playout(state_t *state, rng_t *rng) {
       state->result = RESULT_TABLE[state->boards[9]];
     }
 
-    u32 cell = popcnt(mask - 1) >> 1;
+    u32 cell = ctz(mask) >> 1;
 
     state->player = 1 - state->player;
     state->last_move = (state->boards[9] & (3 << (cell << 1))) ? -1 : cell;
@@ -122,8 +120,8 @@ result_t playout(state_t *state, rng_t *rng) {
 
 void mcts_search(mcts_t *searcher, state_t state) {
   // Selection
-  while (searcher->current_node->expanded && !state.result) {
-    node_t *child = best_children(searcher->current_node);
+  while (searcher->current_node->children_count && !state.result) {
+    node_t *child = select_child(searcher->current_node);
 
     searcher->current_node = child;
     state_move(&state, child->move.grid, child->move.cell);

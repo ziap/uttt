@@ -16,9 +16,6 @@
     assert(x, str) {
       if (!x) throw new Error(cstr(str))
     },
-    logf(x) {
-      return Math.log(x)
-    },
     dump(x) {
       console.log(x)
     }
@@ -38,7 +35,12 @@
     const slice = new Uint8Array(e.data)
     state.set(slice)
 
-    exports.ai_search(BigInt(Date.now()), 1000000)
+    const seed = new BigUint64Array(1)
+    crypto.getRandomValues(seed)
+    console.log(seed[0])
+
+    // TODO: Implement time based searcch
+    exports.ai_search(seed[0], 1000000)
 
     postMessage([...result])
   })
