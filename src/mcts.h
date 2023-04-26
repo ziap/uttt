@@ -7,12 +7,11 @@
 #include "state.h"
 
 typedef struct {
-  nodes_t nodes;
   node_t *current_node;
 
   rng_t rng_state;
 } mcts_t;
 
-move_t search(mcts_t*, state_t*, u64, u32);
+move_t search(mcts_t*, state_t*, u64, i32);
 
 #endif

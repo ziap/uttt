@@ -18,21 +18,14 @@ struct node_t {
   node_t *children;
   node_t *parent;
 
-  u32 simulation_done;
-  u32 simulation_won;
+  u32 value;
+  u32 samples;
 };
 
 extern node_t node_new(i8, i8, node_t*);
 
-#define NODES_CAP (1 << 22)
-
-typedef struct {
-  node_t data[NODES_CAP];
-
-  size_t size;
-} nodes_t;
-
-extern void nodes_init(nodes_t *);
-extern node_t *nodes_push(nodes_t *, i8, i8, node_t*);
+extern node_t *nodes_head(void);
+extern void nodes_init(void);
+extern void nodes_push(i8, i8, node_t*);
 
 #endif

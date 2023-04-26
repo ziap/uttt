@@ -1,9 +1,9 @@
 (async () => {
-  let memoryBuffer
+  let memory
   const decoder = new TextDecoder()
 
   function cstr(ptr) {
-    const mem_arr = new Uint8Array(memoryBuffer, ptr)
+    const mem_arr = new Uint8Array(memory.buffer, ptr)
 
     let len = 0;
     while (mem_arr[len]) ++len
@@ -24,23 +24,19 @@
   const wasm = await WebAssembly.instantiateStreaming(fetch('../wasm/ai.wasm'), { env })
   const { exports } = wasm.instance
 
-  memoryBuffer = exports.memory.buffer
-
-  const state = new Uint8Array(memoryBuffer, exports.state_ptr())
-  const result = new Uint8Array(memoryBuffer, exports.result_ptr(), 2)
+  memory = exports.memory
 
   exports.init()
 
   addEventListener('message', e => {
-    const slice = new Uint8Array(e.data)
-    state.set(slice)
+    const state = new Uint8Array(memory.buffer, exports.state_ptr())
+    state.set(new Uint8Array(e.data))
 
     const seed = new BigUint64Array(1)
     crypto.getRandomValues(seed)
+    exports.ai_search(seed[0], 64)
 
-    // TODO: Implement time based searcch
-    exports.ai_search(seed[0], 1000000)
-
+    const result = new Uint8Array(memory.buffer, exports.result_ptr(), 2)
     postMessage([...result])
   })
 })()
