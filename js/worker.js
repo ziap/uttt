@@ -1,5 +1,5 @@
 (async () => {
-  let memory
+  let memory, start
   const decoder = new TextDecoder()
 
   function cstr(ptr) {
@@ -18,7 +18,16 @@
     },
     dump(x) {
       console.log(x)
-    }
+    },
+    show_result(samples, score) {
+      const elapsed = (Date.now() - start) / 1000
+      console.log([
+        `Simulation done: ${samples}`,
+        `Win rate: ${score * 50 + 50}%`,
+        `Inference time: ${elapsed}`,
+        `Simulation speed: ${samples / elapsed} sims/s`
+      ].join('\n'))
+    },
   }
 
   const wasm = await WebAssembly.instantiateStreaming(fetch('../wasm/ai.wasm'), { env })
@@ -34,6 +43,8 @@
 
     const seed = new BigUint64Array(1)
     crypto.getRandomValues(seed)
+
+    start = Date.now()
     exports.ai_search(seed[0], 64)
 
     const result = new Uint8Array(memory.buffer, exports.result_ptr(), 2)

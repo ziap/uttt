@@ -64,9 +64,14 @@ for (let i = 0; i < 9; i++) {
 async function AIMove() {
   if (state.result || playerTurn[state.currentPlayer]) return
 
+  settingButton.disabled = true
+  restartButton.disabled = true
   const [grid, cell] = await GetAIMove() 
 
   state.move(grid, cell)
+
+  settingButton.disabled = false
+  restartButton.disabled = false
   updateHTML()
 
   if (!playerTurn[state.currentPlayer]) AIMove()

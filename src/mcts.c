@@ -181,7 +181,8 @@ move_t search(mcts_t *mcts, state_t *state, u64 seed, i32 steps) {
       selected = child;
     }
   }
-  dump((f32)selected->value / (f32)selected->samples);
+
+  show_result(mcts->current_node->samples, best_score);
 
   return selected->move;
 }

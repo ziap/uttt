@@ -49,12 +49,19 @@ body {
   cursor: pointer;
   line-height: calc(var(--width) / 15);
   text-decoration: none;
+  border: none;
   border-radius: calc(var(--width) / 160);
   transition: background 0.3s ease 0s, box-shadow 0.3s ease 0s;
 }
 
 .button:hover {
   background: #5d7f94;
+}
+
+.button:disabled {
+  background: #2c3d47;
+  color: #e5e5e5;
+  cursor: not-allowed;
 }
 
 .button-container {
