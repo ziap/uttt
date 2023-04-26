@@ -18,7 +18,7 @@ struct node_t {
   node_t *children;
   node_t *parent;
 
-  u32 value;
+  i32 value;
   u32 samples;
 };
 

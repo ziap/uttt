@@ -148,8 +148,9 @@ void mcts_search(mcts_t *searcher, state_t state, i32 *steps) {
   for (;;) {
     searcher->current_node->samples++;
 
-    if (current_player == result - 1) {
-      searcher->current_node->value++; 
+    if (result != TIE) {
+      if (current_player == result - 1) searcher->current_node->value++;
+      else searcher->current_node->value--;
     }
 
     current_player = 1 - current_player;
