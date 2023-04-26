@@ -37,7 +37,6 @@
 
     const seed = new BigUint64Array(1)
     crypto.getRandomValues(seed)
-    console.log(seed[0])
 
     // TODO: Implement time based searcch
     exports.ai_search(seed[0], 1000000)
