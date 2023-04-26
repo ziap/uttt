@@ -1,10 +1,10 @@
-# Ultimate Tic Tac Toe Remastered
+# Ultimate Tic-Tac-Toe
 
-A work in progress replacement for my old UTTT game.
+Ultimate Tic-Tac-Toe with AI player
 
 ![](logo.png)
 
-## What is Ultimate Tic Tac Toe
+## What is Ultimate Tic-Tac-Toe
 
 Basically, it's a less boring and more sophisticated version of tic-tac-toe.
 
@@ -28,31 +28,36 @@ The rules are:
 
 [Source](https://mathwithbaddrawings.com/2013/06/16/ultimate-tic-tac-toe/)
 
-## Improvements
+## About the AI
 
-- [x] Uses Modern ES6 syntax and module.
-- [x] UI and animations are done entirely with CSS.
-- [x] Ultra-Responsive UI layout.
-- [ ] Enhanced WebAssembly powered AI.
+The AI is an implementation of the Monte Carlo tree search algorithm.
+
+Some clever design decisions were made to make the AI as fast as possible:
+
+- Written in plain C99, compiled to WebAssembly without any standard library.
+- Bitboard representation for extremely fast move generation
+- Lookup-table for win-checking
+- Fast, memory-efficient game-tree architecture with custom arena allocator.
+
+With these optmizations, the AI is capable of running millions of MCTS
+iterations per move, which makes it very powerful despite its very basic
+implementation of MCTS.
 
 ## Usage
 
-To run the application
+Go to the deployed website: <https://ziap.github.io/ultimate-tic-tac-toe>
+
+To run the application locally:
 
 ```bash
+# Compile the WASM Modules
+./build.sh
+
 # Serve the app locally with your HTTP server of choice
 python3 -m http.server 8080
 
 # Launch the app in your browser of choice
 firefox http://localhost:8080
-```
-
-This project uses TypeScript for type-checking and static analysis but not for
-advanced type system features. To type-check the project, install TypeScript and
-run
-
-```bash
-npx tsc --project jsconfig.json
 ```
 
 # License
