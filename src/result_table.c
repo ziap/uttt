@@ -27,6 +27,8 @@ void create_table(void) {
   }
 
   for (u32 board = 0; board < TABLE_SIZE; ++board) {
+    // NOTE: Maybe LUT isn't necessary since this part is going to be vectorized
+    // by the compiler and might be faster than array lookup
     for (usize i = 0; i < len(WIN_TRIPLETS); ++i) {
       u32 mask_x = win_mask_x[i];
       u32 mask_o = win_mask_o[i];
@@ -43,16 +45,9 @@ void create_table(void) {
     }
     
     if (RESULT_TABLE[board]) continue;
-    RESULT_TABLE[board] = TIE;
 
-    u32 tmp = board;
-    for (usize i = 0; i < 9; ++i) {
-      u32 cell = tmp & 3;
-      tmp >>= 2;
-
-      if (cell) continue;
-      RESULT_TABLE[board] = 0;
-      break;
-    }
+    // Check if a move is avaialble
+    u32 mask = (~(board | (board >> 1))) & 0x15555u;
+    RESULT_TABLE[board] = mask ? PLAYING : TIE;
   }
 }

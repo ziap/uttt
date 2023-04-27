@@ -1,12 +1,27 @@
-const wasm = await WebAssembly.instantiateStreaming(fetch('./wasm/state.wasm'))
-const { exports } = wasm.instance
-const boards = new Uint32Array(exports.memory.buffer, exports.boards(), 10)
+let memory
 
-const stateSlice = new Uint8Array(
-  exports.memory.buffer,
-  exports.state_ptr(),
-  exports.state_size()
-)
+function cstr(ptr) {
+  const mem_arr = new Uint8Array(memory.buffer, ptr)
+
+  let len = 0;
+  while (mem_arr[len]) ++len
+
+  const bytes = mem_arr.slice(0, len)
+  return decoder.decode(bytes);
+}
+
+const env = {
+  assert(x, str) { if (!x) throw new Error(cstr(str)) },
+  dump(x) { console.log(x) },
+}
+
+const wasm = await WebAssembly.instantiateStreaming(fetch('./wasm/state.wasm'), { env })
+const { exports } = wasm.instance
+
+memory = exports.memory
+
+const boards = new Uint32Array(memory.buffer, exports.boards(), 10)
+const stateBuffer = new Uint8Array(memory.buffer, exports.state_ptr(), exports.state_size())
 
 const state = {
   boards,
@@ -20,4 +35,4 @@ const state = {
 
 exports.init()
 
-export {state, stateSlice}
+export {state, stateBuffer}

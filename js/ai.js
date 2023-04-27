@@ -1,10 +1,10 @@
-import { stateSlice } from "./state.js";
+import { stateBuffer } from "./state.js";
 
 const worker = new Worker('./js/worker.js')
 
 export function GetAIMove() {
-  const arr = new Uint8Array(stateSlice.length)
-  arr.set(stateSlice)
+  const arr = new Uint8Array(stateBuffer.length)
+  arr.set(stateBuffer)
 
   const buf = arr.buffer
   worker.postMessage(buf, [buf])

@@ -1,6 +1,8 @@
+// Monte Carlo tree search algorithm
+// See: <https://en.wikipedia.org/wiki/Monte_Carlo_tree_search>
 #include "mcts.h"
 
-void mcts_init(mcts_t *searcher, u64 seed) {
+static void mcts_init(mcts_t *searcher, u64 seed) {
   nodes_init();
 
   searcher->current_node = nodes_head();
@@ -8,28 +10,29 @@ void mcts_init(mcts_t *searcher, u64 seed) {
   nodes_push(-1, -1, NULL);
 }
 
-f32 uct(node_t *node) {
+// Upper Confidence bounds applied to Trees (UCT)
+static f32 uct(node_t *node, f32 t) {
   const f32 c = 1.4142135623730951f; // sqrt2
   f32 n = node->samples;
   f32 w = node->value;
-  f32 t = node->parent ? log(node->parent->samples) : 0;
 
   f32 uct = (w / n) + c * sqrtf(t / n);
 
   return uct;
 }
 
-node_t *select_child(node_t *node) {
+static node_t *select_child(node_t *node) {
   node_t *best_child = node->children;
   if (!best_child->samples) return best_child;
 
-  f32 best_uct = uct(best_child);
+  f32 t = log(node->samples);
+  f32 best_uct = uct(best_child, t);
 
   for (usize i = 1; i < node->children_count; ++i) {
     node_t *child = node->children + i;
     if (!child->samples) return child;
 
-    f32 child_uct = uct(child);
+    f32 child_uct = uct(child, t);
     if (child_uct > best_uct) {
       best_uct = child_uct;
       best_child = child;
@@ -39,10 +42,27 @@ node_t *select_child(node_t *node) {
   return best_child;
 }
 
-void expand_node(node_t *node, state_t *state) {
-  node->children = nodes_head();
+// Iterate over a board and add all possible moves to the tree
+static void expand_board(node_t *node, u32 grid_idx, u32 board) {
+  u32 mask = (~(board | (board >> 1))) & 0x15555u;
 
-  if (state->last_move == -1) {
+  while (mask) {
+    u32 cell = mask & -mask;
+    mask ^= cell;
+
+    u32 cell_idx = ctz(cell) >> 1;
+
+    node->children_count++;
+    nodes_push(grid_idx, cell_idx, node);
+  }
+}
+
+static void expand_node(node_t *node, state_t *state) {
+  node->children = nodes_head();
+  u32 grid_idx = state->last_move;
+
+  // Also iterate over all local boards when the player can move anywhere
+  if (grid_idx == -1) {
     u32 global_board = state->boards[9];
     u32 global_mask = (~(global_board | (global_board >> 1))) & 0x15555u;
 
@@ -50,39 +70,23 @@ void expand_node(node_t *node, state_t *state) {
       u32 grid = global_mask & -global_mask;
       global_mask ^= grid;
 
-      u32 grid_idx = ctz(grid) >> 1;
-      u32 board = state->boards[grid_idx];
-      u32 mask = (~(board | (board >> 1))) & 0x15555u;
-
-      while (mask) {
-        u32 cell = mask & -mask;
-        mask ^= cell;
-
-        u32 cell_idx = ctz(cell) >> 1;
-
-        node->children_count++;
-        nodes_push(grid_idx, cell_idx, node);
-      }
+      grid_idx = ctz(grid) >> 1;
+      expand_board(node, grid_idx, state->boards[grid_idx]);
     }
-  } else {
-    u32 board = state->boards[state->last_move];
-    u32 mask = (~(board | (board >> 1))) & 0x15555u;
-
-    while (mask) {
-      u32 cell = mask & -mask;
-      mask ^= cell;
-
-      u32 cell_idx = ctz(cell) >> 1;
-
-      node->children_count++;
-      nodes_push(state->last_move, cell_idx, node);
-    }
-  }
+  } else expand_board(node, grid_idx, state->boards[grid_idx]);
 }
 
-result_t playout(state_t *state, rng_t *rng, i32 *steps) {
+static result_t playout(state_t *state, rng_t *rng, i32 *steps) {
+  // Algorithm for efficiently picking a random empty cell:
+  //  - Create a bitmask representing all empty cells.
+  //  - Remove a random amount of bits from the left
+  //  - Select the leftmost bit after removal.
+  // This can be done for both the local and global board
+
   while (!state->result) {
     u32 grid = state->last_move;
+    
+    // Select a random local board when the player can move anywhere
     if (grid == -1) {
       u32 board = state->boards[9];
       u32 mask = (~(board | (board >> 1))) & 0x15555u;
@@ -120,7 +124,7 @@ result_t playout(state_t *state, rng_t *rng, i32 *steps) {
   return state->result;
 }
 
-void mcts_search(mcts_t *searcher, state_t state, i32 *steps) {
+static void mcts_search(mcts_t *searcher, state_t state, i32 *steps) {
   // Selection
   while (searcher->current_node->children_count && !state.result) {
     node_t *child = select_child(searcher->current_node);
@@ -164,9 +168,8 @@ void mcts_search(mcts_t *searcher, state_t state, i32 *steps) {
 move_t search(mcts_t *mcts, state_t *state, u64 seed, i32 steps) {
   mcts_init(mcts, seed);
 
+  // Dynamic time allocation based on tree-traversal and simulation steps
   while (steps > 0) mcts_search(mcts, *state, &steps);
-
-  assert(mcts->current_node->children_count, "ERROR: No moves available");
 
   node_t *selected = mcts->current_node->children;
   f32 best_score = (f32)selected->value / (f32)selected->samples;
@@ -183,6 +186,10 @@ move_t search(mcts_t *mcts, state_t *state, u64 seed, i32 steps) {
   }
 
   show_result(mcts->current_node->samples, best_score);
-
   return selected->move;
 }
+
+// NOTE: Currently the AI is not very random. It may be because the bias
+// produced by choosing the first child with the best UCT value is propagated
+// over a large number of simulations. This must be addressed to reduce the
+// predictability of the AI.

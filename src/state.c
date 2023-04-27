@@ -17,6 +17,7 @@ void state_move(state_t *state, u8 grid, u8 cell) {
   if (new_board == state->boards[grid]) return;
   state->boards[grid] = new_board;
   
+  // Update global board
   result_t sub_result = RESULT_TABLE[new_board];
   if (sub_result) {
     state->boards[9] |= sub_result << (grid << 1);

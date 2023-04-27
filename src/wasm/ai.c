@@ -15,14 +15,16 @@ void nodes_init(void) { size = 0; }
 void nodes_push(i8 grid, i8 cell, node_t *parent) {
   if (size == capacity) {
     if (!capacity) {
+      // Setting the pointer to the end of the block of memory
       nodes = (node_t *)(__builtin_wasm_memory_size(0) * PAGE);
 
+      // Pre-allocate a page of memory
       __builtin_wasm_memory_grow(0, 1);
       capacity = NODES_PAGE;
     }
 
+    // Double the stack capacity
     usize pages = capacity / NODES_PAGE;
-
     __builtin_wasm_memory_grow(0, pages);
     capacity += capacity;
   }

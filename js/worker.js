@@ -13,12 +13,8 @@
   }
 
   const env = {
-    assert(x, str) {
-      if (!x) throw new Error(cstr(str))
-    },
-    dump(x) {
-      console.log(x)
-    },
+    assert(x, str) { if (!x) throw new Error(cstr(str)) },
+    dump(x) { console.log(x) },
     show_result(samples, score) {
       const elapsed = (Date.now() - start) / 1000
       console.log([

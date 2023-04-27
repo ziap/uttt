@@ -3,6 +3,8 @@
 #define MUL 6364136223846793005ULL
 #define INC 1442695040888963407ULL
 
+// 32-bit PCG with 64-bit state
+// See: <https://www.pcg-random.org>
 u32 rand_u32(rng_t *state) {
   rng_t oldstate = *state;
   *state = oldstate * MUL + INC;
