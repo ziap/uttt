@@ -62,4 +62,4 @@ firefox http://localhost:8080
 
 # License
 
-This app is licensed under the [MIT license](LICENSE).
+This app is licensed under the [AGPL-3.0 license](LICENSE).
