@@ -30,18 +30,25 @@ The rules are:
 
 ## About the AI
 
-The AI is an implementation of the Monte Carlo tree search algorithm.
+The AI uses the Monte Carlo tree search algorithm.
 
 Some clever design decisions were made to make the AI as fast as possible:
 
-- Written in plain C99, compiled to WebAssembly without any standard library.
+- Written in plain C99, compiled to WebAssembly without any standard library
 - Bitboard representation for extremely fast move generation
 - Lookup-table for win-checking
-- Fast, memory-efficient game-tree architecture with custom arena allocator.
+- Fast, memory-efficient game-tree architecture with custom arena allocator
 
 With these optmizations, the AI is capable of running millions of MCTS
-iterations per move, which makes it very powerful despite its very basic
+iterations per move, which makes it very powerful despite its rudimentary
 implementation of MCTS.
+
+Some future improvements:
+
+- Root parallelism using multiple web workers
+- Incorporate Proof-number search to prune the search tree
+- Search tree reuse (have to replace the arena allocator with a pool allocator)
+- Positional analysis
 
 ## Usage
 
