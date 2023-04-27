@@ -25,7 +25,5 @@ SRCS="$(ls src/*.c)"
 for SRC in $(ls src/wasm/*.c)
 do
   OUTPUT="wasm/$(basename ${SRC%.*}).wasm"
-  $CC $CFLAG $LDLIBS $WASM_FLAGS -o $OUTPUT $SRC $SRCS &
+  $CC $CFLAG $LDLIBS $WASM_FLAGS -o $OUTPUT $SRC $SRCS
 done
-
-wait
