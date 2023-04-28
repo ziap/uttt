@@ -7,11 +7,12 @@ const mainCells = gameRoot.querySelectorAll('.main-cell')
 const subCells = gameRoot.querySelectorAll('.sub-cell')
 const subGrids = gameRoot.querySelectorAll('.sub-grid')
 
-const settingButton = gameRoot.querySelector('#setting')
+const settingsButton = gameRoot.querySelector('#settings')
 const restartButton = gameRoot.querySelector('#restart')
 const endMessage = gameRoot.querySelector('#end-message')
 
-const playerTurn = [true, false]
+let playerTurn = [true, false]
+let AIStrength = 32
 
 function updateHTML() {
   for (const elem of mainCells) elem.className = 'main-cell'
@@ -64,13 +65,14 @@ for (let i = 0; i < 9; i++) {
 async function AIMove() {
   if (state.result || playerTurn[state.currentPlayer]) return
 
-  settingButton.disabled = true
+  // TODO: Properly cancel AI move when clicking restart of settings
+  settingsButton.disabled = true
   restartButton.disabled = true
-  const [grid, cell] = await GetAIMove() 
+  const [grid, cell] = await GetAIMove(AIStrength) 
 
   state.move(grid, cell)
 
-  settingButton.disabled = false
+  settingsButton.disabled = false
   restartButton.disabled = false
   updateHTML()
 
@@ -83,5 +85,38 @@ restartButton.addEventListener('click', () => {
   AIMove()
 })
 
-settingButton.addEventListener('click', () => alert('WIP'))
+const settingsRoot = document.querySelector('#settings-container')
+const settingsPlayerX = settingsRoot.querySelector('#settings-player-x')
+const settingsPlayerO = settingsRoot.querySelector('#settings-player-o')
+const settingsAI = settingsRoot.querySelector('#settings-ai')
+const settingsAIDisplay = settingsRoot.querySelector('#settings-ai-display')
+const settingsSubmit = settingsRoot.querySelector('#settings-submit')
+const settingsReturn = settingsRoot.querySelector('#settings-return')
+
+settingsButton.addEventListener('click', () => {
+  settingsPlayerX.value = playerTurn[0] ? 'human' : 'ai'
+  settingsPlayerO.value = playerTurn[1] ? 'human' : 'ai'
+  
+  settingsAI.value = AIStrength
+  settingsAIDisplay.textContent = AIStrength
+
+  settingsRoot.hidden = false
+})
+
+settingsSubmit.addEventListener('click', () => {
+  playerTurn[0] = settingsPlayerX.value == 'human'
+  playerTurn[1] = settingsPlayerO.value == 'human'
+
+  AIStrength = parseInt(settingsAI.value)
+  settingsRoot.hidden = true
+
+  state.reset()
+  updateHTML()
+  AIMove()
+})
+
+settingsAI.addEventListener('input', (e) => settingsAIDisplay.textContent = e.target.value)
+
+settingsReturn.addEventListener('click', () => settingsRoot.hidden = true)
+
 updateHTML()

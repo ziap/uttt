@@ -35,13 +35,13 @@
 
   addEventListener('message', e => {
     const state = new Uint8Array(memory.buffer, exports.state_ptr())
-    state.set(new Uint8Array(e.data))
+    state.set(new Uint8Array(e.data.buf))
 
     const seed = new BigUint64Array(1)
     crypto.getRandomValues(seed)
 
     start = Date.now()
-    exports.ai_search(seed[0], 64)
+    exports.ai_search(seed[0], e.data.strength)
 
     const result = new Uint8Array(memory.buffer, exports.result_ptr(), 2)
     postMessage([...result])
