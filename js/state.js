@@ -1,4 +1,5 @@
 let memory
+const decoder = new TextDecoder()
 
 function cstr(ptr) {
   const mem_arr = new Uint8Array(memory.buffer, ptr)
