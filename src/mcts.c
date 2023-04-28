@@ -25,7 +25,7 @@ static node_t *select_child(node_t *node) {
   node_t *best_child = node->children;
   if (!best_child->samples) return best_child;
 
-  f32 t = log(node->samples);
+  f32 t = fastln(node->samples);
   f32 best_uct = uct(best_child, t);
 
   for (usize i = 1; i < node->children_count; ++i) {
@@ -76,48 +76,36 @@ static void expand_node(node_t *node, state_t *state) {
   } else expand_board(node, grid_idx, state->boards[grid_idx]);
 }
 
-static result_t playout(state_t *state, rng_t *rng, i32 *steps) {
-  // Algorithm for efficiently picking a random empty cell:
-  //  - Create a bitmask representing all empty cells.
-  //  - Remove a random amount of bits from the left
-  //  - Select the leftmost bit after removal.
-  // This can be done for both the local and global board
+// Picking a random empty cell
+static u32 random_move_mask(u32 board, rng_t *rng) {
+  // Create a bitmask representing all empty cells
+  u32 mask = (~(board | (board >> 1))) & 0x15555u;
 
+  // Remove a random amount of bits from the left
+  u32 idx = rand_u32(rng) % popcnt(mask);
+  for (usize i = 0; i < idx; ++i) mask &= (mask - 1);
+
+  // Select the leftmost bit after removal
+  return mask & -mask;
+}
+
+static result_t playout(state_t *state, rng_t *rng, i32 *steps) {
   while (!state->result) {
     u32 grid = state->last_move;
     
     // Select a random local board when the player can move anywhere
     if (grid == -1) {
-      u32 board = state->boards[9];
-      u32 mask = (~(board | (board >> 1))) & 0x15555u;
-
-      u32 idx = rand_u32(rng) % popcnt(mask);
-      for (usize i = 0; i < idx; ++i) mask &= (mask - 1);
-      mask &= -mask;
+      u32 mask = random_move_mask(state->boards[9], rng);
 
       grid = ctz(mask) >> 1;
     }
 
     u32 board = state->boards[grid];
-    u32 mask = (~(board | (board >> 1))) & 0x15555u;
-
-    u32 idx = rand_u32(rng) % popcnt(mask);
-    for (usize i = 0; i < idx; ++i) mask &= (mask - 1);
-    mask &= -mask;
+    u32 mask = random_move_mask(board, rng);
 
     board |= (mask << state->player);
-    state->boards[grid] = board;
+    state_replace(state, grid, ctz(mask) >> 1, board);
 
-    result_t sub_result = RESULT_TABLE[board];
-    if (sub_result) {
-      state->boards[9] |= sub_result << (grid << 1);
-      state->result = RESULT_TABLE[state->boards[9]];
-    }
-
-    u32 cell = ctz(mask) >> 1;
-
-    state->player = 1 - state->player;
-    state->last_move = (state->boards[9] & (3 << (cell << 1))) ? -1 : cell;
     *steps = *steps - 1;
   }
 

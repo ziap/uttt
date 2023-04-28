@@ -24,6 +24,7 @@ struct node_t {
 
 extern node_t node_new(i8, i8, node_t*);
 
+// TODO: Properly make a platform abstraction
 extern node_t *nodes_head(void);
 extern void nodes_init(void);
 extern void nodes_push(i8, i8, node_t*);

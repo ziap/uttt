@@ -20,5 +20,6 @@ typedef struct {
 
 extern void state_init(state_t *);
 extern void state_move(state_t *, u8, u8);
+extern void state_replace(state_t *, u8, u8, u32);
 
 #endif

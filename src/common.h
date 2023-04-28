@@ -15,7 +15,10 @@
 #define ctz __builtin_ctz
 #define clz __builtin_clz
 #define sqrtf __builtin_sqrtf
-#define log(x) ((f32)(31 - clz(x)) * 0.6931471805599453f) // log2(x) / log2(e)
+
+// This is actually floor(log2(x)) / log2(e) which is not exactly ln(x) but
+// good enough for our use case.
+#define fastln(x) ((f32)(31 - clz(x)) * 0.6931471805599453f)
 
 typedef uint8_t u8;
 typedef uint16_t u16;
