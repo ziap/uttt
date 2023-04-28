@@ -2,6 +2,7 @@ import { stateBuffer } from "./state.js";
 
 const worker = new Worker('./js/worker.js')
 
+// TODO: Root parallelism
 export function GetAIMove(strength) {
   const arr = new Uint8Array(stateBuffer.length)
   arr.set(stateBuffer)
