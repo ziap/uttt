@@ -1,6 +1,6 @@
 # Ultimate Tic-Tac-Toe
 
-Ultimate Tic-Tac-Toe with AI player
+A high performance Ultimate Tic-Tac-Toe engine in the browser.
 
 ![](logo.png)
 
