@@ -1,4 +1,4 @@
-import { GetAIMove } from './ai.js'
+import { GetAIMove, StopAI } from './ai.js'
 import { state } from './state.js'
 
 const gameRoot = document.querySelector('#container')
@@ -83,25 +83,22 @@ function updateHTML() {
 async function AIMove() {
   if (state.result || playerTurn[state.currentPlayer]) return
 
-  // TODO: Properly cancel AI move when clicking restart of settings
-  settingsButton.disabled = true
-  restartButton.disabled = true
   const [grid, cell] = await GetAIMove(AIStrength) 
 
   state.move(grid, cell)
-
-  settingsButton.disabled = false
-  restartButton.disabled = false
   updateHTML()
 
   if (!playerTurn[state.currentPlayer]) AIMove()
 }
 
-restartButton.addEventListener('click', () => {
+async function reset() {
   state.reset()
+  await StopAI()
   updateHTML()
   AIMove()
-})
+}
+
+restartButton.addEventListener('click', reset)
 
 const settingsRoot = document.querySelector('#settings-container')
 const settingsPlayerX = settingsRoot.querySelector('#settings-player-x')
@@ -122,18 +119,20 @@ settingsButton.addEventListener('click', () => {
 })
 
 settingsSubmit.addEventListener('click', () => {
-  playerTurn[0] = settingsPlayerX.value == 'human'
-  playerTurn[1] = settingsPlayerO.value == 'human'
+  playerTurn = [
+    settingsPlayerX.value == 'human',
+    settingsPlayerO.value == 'human'
+  ]
 
   AIStrength = parseInt(settingsAI.value)
   settingsRoot.hidden = true
 
-  state.reset()
-  updateHTML()
-  AIMove()
+  reset()
 })
 
-settingsAI.addEventListener('input', (e) => settingsAIDisplay.textContent = e.target.value)
+settingsAI.addEventListener('input', (e) => {
+  settingsAIDisplay.textContent = e.target.value
+})
 
 settingsReturn.addEventListener('click', () => settingsRoot.hidden = true)
 

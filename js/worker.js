@@ -46,4 +46,6 @@
     const result = new Uint8Array(memory.buffer, exports.result_ptr(), 2)
     postMessage([...result])
   })
+
+  postMessage('ready')
 })()
