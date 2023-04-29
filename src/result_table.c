@@ -1,23 +1,23 @@
 #include "common.h"
 #include "result_table.h"
 
-static const u8 WIN_TRIPLETS[][3] = {
-  {0, 1, 2},
-  {3, 4, 5},
-  {6, 7, 8},
-  {0, 3, 6},
-  {1, 4, 7},
-  {2, 5, 8},
-  {0, 4, 8},
-  {2, 4, 6},
-};
-
 result_t RESULT_TABLE[TABLE_SIZE] = {0};
 
-static u32 win_mask_x[len(WIN_TRIPLETS)] = {0};
-static u32 win_mask_o[len(WIN_TRIPLETS)] = {0};
-
 void create_table(void) {
+  const u8 WIN_TRIPLETS[][3] = {
+    {0, 1, 2},
+    {3, 4, 5},
+    {6, 7, 8},
+    {0, 3, 6},
+    {1, 4, 7},
+    {2, 5, 8},
+    {0, 4, 8},
+    {2, 4, 6},
+  };
+
+  u32 win_mask_x[len(WIN_TRIPLETS)] = {0};
+  u32 win_mask_o[len(WIN_TRIPLETS)] = {0};
+
   for (usize i = 0; i < len(WIN_TRIPLETS); ++i) {
     for (const u8 *it = WIN_TRIPLETS[i]; it < WIN_TRIPLETS[i + 1]; ++it) {
       u32 cell = *it;

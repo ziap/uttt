@@ -1,8 +1,7 @@
 #include "state.h"
 
 void state_init(state_t *state) {
-  memset(state->boards, 0, sizeof(state->boards));
-
+  for (usize i = 0; i < len(state->boards); ++i) state->boards[i] = 0;
   state->last_move = -1;
 
   state->player = PLAYER_X;
