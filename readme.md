@@ -52,7 +52,7 @@ Some future improvements:
 
 ## Usage
 
-Go to the deployed website: <https://ziap.github.io/ultimate-tic-tac-toe>
+Go to the deployed website: <https://ziap.github.io/uttt>
 
 To run the application locally:
 
