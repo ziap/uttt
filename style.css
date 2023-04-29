@@ -85,7 +85,7 @@ body {
   align-items: center;
 }
 
-.main-grid, .sub-grid {
+#main-grid, .sub-grid {
   width: 92%;
   height: 92%;
   background: var(--yellow);

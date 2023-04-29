@@ -3,9 +3,39 @@ import { state } from './state.js'
 
 const gameRoot = document.querySelector('#container')
 
-const mainCells = gameRoot.querySelectorAll('.main-cell')
-const subCells = gameRoot.querySelectorAll('.sub-cell')
-const subGrids = gameRoot.querySelectorAll('.sub-grid')
+const mainGrid = document.querySelector('#main-grid')
+let mainCells = []
+let subCells = []
+let subGrids = []
+
+for (let i = 0; i < 9; ++i) {
+  const mainCell = document.createElement('div')
+  mainCell.classList.add('main-cell')
+
+  const subGrid = document.createElement('div')
+  subGrid.classList.add('sub-grid')
+
+  for (let j = 0; j < 9; ++j) {
+    const subCell = document.createElement('div')
+    subCell.classList.add('sub-cell')
+    subCell.addEventListener('click', () => {
+      if (!playerTurn[state.currentPlayer]) return
+
+      state.move(i, j)
+      updateHTML()
+      AIMove()
+    })
+
+    subGrid.appendChild(subCell)
+    subCells.push(subCell)
+  }
+
+  mainCell.appendChild(subGrid)
+  mainGrid.appendChild(mainCell)
+
+  subGrids.push(subGrid)
+  mainCells.push(mainCell)
+}
 
 const settingsButton = gameRoot.querySelector('#settings')
 const restartButton = gameRoot.querySelector('#restart')
@@ -47,18 +77,6 @@ function updateHTML() {
         subCells[9 * i + j].classList.add(tile)
       }
     }
-  }
-}
-
-for (let i = 0; i < 9; i++) {
-  for (let j = 0; j < 9; j++) {
-    subCells[9 * i + j].addEventListener('click', () => {
-      if (!playerTurn[state.currentPlayer]) return
-
-      state.move(i, j)
-      updateHTML()
-      AIMove()
-    })
   }
 }
 
@@ -120,3 +138,4 @@ settingsAI.addEventListener('input', (e) => settingsAIDisplay.textContent = e.ta
 settingsReturn.addEventListener('click', () => settingsRoot.hidden = true)
 
 updateHTML()
+gameRoot.hidden = false
