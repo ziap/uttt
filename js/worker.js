@@ -15,15 +15,12 @@
   const env = {
     assert(x, str) { if (!x) throw new Error(cstr(str)) },
     dump(x) { console.log(x) },
-    show_result(samples, score) {
-      const elapsed = (Date.now() - start) / 1000
-      console.log([
-        `Simulation done: ${samples}`,
-        `Win rate: ${score * 50 + 50}%`,
-        `Inference time: ${elapsed}`,
-        `Simulation speed: ${samples / elapsed} sims/s`
-      ].join('\n'))
-    },
+    export_children(ptr, size) {
+      const slice = new Uint8Array(memory.buffer, ptr, size);
+      const cloned = new Uint8Array(slice)
+
+      postMessage(cloned.buffer, [cloned.buffer])
+    }
   }
 
   const wasm = await WebAssembly.instantiateStreaming(fetch('../wasm/ai.wasm'), { env })
@@ -42,9 +39,6 @@
 
     start = Date.now()
     exports.ai_search(seed[0], e.data.strength)
-
-    const result = new Uint8Array(memory.buffer, exports.result_ptr(), 2)
-    postMessage([...result])
   })
 
   postMessage('ready')

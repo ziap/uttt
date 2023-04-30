@@ -12,8 +12,6 @@ typedef struct {
   rng_t rng_state;
 } mcts_t;
 
-extern move_t search(mcts_t*, state_t*, u64, i32);
-
-extern void show_result(u32, f32);
+extern void search(mcts_t*, state_t*, u64, i32);
 
 #endif

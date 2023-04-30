@@ -153,28 +153,11 @@ static void mcts_search(mcts_t *searcher, state_t state, i32 *steps) {
   }
 }
 
-move_t search(mcts_t *mcts, state_t *state, u64 seed, i32 steps) {
+void search(mcts_t *mcts, state_t *state, u64 seed, i32 steps) {
   mcts_init(mcts, seed);
 
   // Dynamic time allocation based on tree-traversal and simulation steps
   while (steps > 0) mcts_search(mcts, *state, &steps);
-
-  node_t *selected = mcts->current_node->children;
-  f32 best_score = (f32)selected->value / (f32)selected->samples;
-
-  for (usize i = 0; i < mcts->current_node->children_count; ++i) {
-    node_t *child = mcts->current_node->children + i;
-
-    f32 score = (f32)child->value / (f32)child->samples;
-
-    if (score > best_score) {
-      best_score = score;
-      selected = child;
-    }
-  }
-
-  show_result(mcts->current_node->samples, best_score);
-  return selected->move;
 }
 
 // NOTE: Currently the AI is not very random. It may be because the bias

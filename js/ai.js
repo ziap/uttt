@@ -1,43 +1,64 @@
-import { stateBuffer } from "./state.js";
+import { state, stateBuffer } from "./state.js";
 
-async function createWorker() {
+function createWorker() {
   const worker = new Worker('./js/worker.js')
 
-  await new Promise(resolve => worker.addEventListener('message', e => {
+  return new Promise(resolve => worker.addEventListener('message', e => {
     const msg = e.data
     if (msg != 'ready') throw new Error(`Expected 'ready', got ${msg}`)
 
-    resolve()
+    resolve(worker)
   }, { once: true }))
-
-  return worker
 }
 
-let worker = await createWorker()
+function createWorkers(count) {
+  let workers = [createWorker()]
+  for (let i = 1; i < count; ++i) workers.push(createWorker())
+
+  return Promise.all(workers)
+}
+
+const workerCount = navigator.hardwareConcurrency
+
+let workers = await createWorkers(workerCount)
 let working = false
 
-// TODO: Root parallelism
-export function GetAIMove(strength) {
-  const arr = new Uint8Array(stateBuffer.length)
-  arr.set(stateBuffer)
+export async function invokeAI(strength) {
+  const start = performance.now()
+  let promises = []
 
-  const buf = arr.buffer
-  worker.postMessage({strength, buf}, [buf])
+  for (const worker of workers) {
+    promises.push(new Promise(resolve => {
+      worker.addEventListener('message', e => {
+        resolve(e.data)
+      }, { once: true })
+    }))
+  }
 
   working = true
-  return new Promise(resolve => {
-    worker.addEventListener('message', e => {
-      resolve(e.data)
-      working = false
-    }, {once: true})
-  })
+  for (const worker of workers) {
+    const arr = new Uint8Array(stateBuffer.length)
+    arr.set(stateBuffer)
+
+    const buf = arr.buffer
+    worker.postMessage({ strength, buf }, [buf])
+  }
+
+  const results = await Promise.all(promises)
+  working = false
+
+  state.set_children(results[0])
+  for (let i = 1; i < promises.length; ++i) state.add_children(promises[i])
+
+  state.best_move(results[0].byteLength)
+  console.log(`Search time: ${performance.now() - start}`)
 }
 
-export async function StopAI() {
+export async function stopAI() {
   if (!working) return
 
-  worker.terminate()
-  worker = await createWorker()
+  for (const worker of workers) worker.terminate()
+  workers = await createWorkers(workerCount)
 
   working = false
 }

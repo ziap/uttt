@@ -1,4 +1,4 @@
-import { GetAIMove, StopAI } from './ai.js'
+import { invokeAI, stopAI } from './ai.js'
 import { state } from './state.js'
 
 const gameRoot = document.querySelector('#container')
@@ -65,7 +65,7 @@ function updateHTML() {
       case 1: mainCells[i].classList.add('x'); continue
       case 2: mainCells[i].classList.add('o'); continue
       default: break
-    } 
+    }
 
     let board = state.boards[i]
     for (let j = 0; j < 9; ++j) {
@@ -73,7 +73,7 @@ function updateHTML() {
       board >>= 2
 
       if (tile) {
-        console.assert(tile != 'error')
+        if (tile == 'error') throw new Error(`Local board (${i}, ${j}) tied`)
         subCells[9 * i + j].classList.add(tile)
       }
     }
@@ -83,18 +83,19 @@ function updateHTML() {
 async function AIMove() {
   if (state.result || playerTurn[state.currentPlayer]) return
 
-  const [grid, cell] = await GetAIMove(AIStrength) 
+  await invokeAI(AIStrength)
 
-  state.move(grid, cell)
   updateHTML()
 
   if (!playerTurn[state.currentPlayer]) AIMove()
 }
 
 async function reset() {
+  await stopAI()
+
   state.reset()
-  await StopAI()
   updateHTML()
+
   AIMove()
 }
 
@@ -111,7 +112,7 @@ const settingsReturn = settingsRoot.querySelector('#settings-return')
 settingsButton.addEventListener('click', () => {
   settingsPlayerX.value = playerTurn[0] ? 'human' : 'ai'
   settingsPlayerO.value = playerTurn[1] ? 'human' : 'ai'
-  
+
   settingsAI.value = AIStrength
   settingsAIDisplay.textContent = AIStrength
 

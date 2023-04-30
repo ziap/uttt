@@ -3,7 +3,7 @@
 
 result_t RESULT_TABLE[TABLE_SIZE] = {0};
 
-void create_table(void) {
+void create_table() {
   const u8 WIN_TRIPLETS[][3] = {
     {0, 1, 2},
     {3, 4, 5},

@@ -14,4 +14,8 @@ export void init(void);
 export void move(u32, u32);
 export void reset(void);
 
+export void* children_ptr(void);
+export void combine_children(u32);
+export void select_child(u32);
+
 #endif

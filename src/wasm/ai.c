@@ -8,9 +8,9 @@ static usize size = 0;
 
 static node_t *nodes = NULL;
 
-node_t *nodes_head(void) { return nodes + size; }
+node_t *nodes_head() { return nodes + size; }
 
-void nodes_init(void) { size = 0; }
+void nodes_init() { size = 0; }
 
 void nodes_push(i8 grid, i8 cell, node_t *parent) {
   if (size == capacity) {
@@ -36,10 +36,13 @@ state_t state;
 mcts_t searcher;
 move_t result;
 
-void init(void) { create_table(); }
-void *state_ptr(void) { return &state; }
-void *result_ptr(void) { return &result; }
+void init() { create_table(); }
+void *state_ptr() { return &state; }
+void *result_ptr() { return &result; }
 
 void ai_search(u64 seed, i32 steps) {
-  result = search(&searcher, &state, seed, steps * (1 << 20));
+  search(&searcher, &state, seed, steps * (1 << 20));
+
+  node_t *node = searcher.current_node;
+  export_children(node->children, node->children_count * sizeof(node_t));
 }
