@@ -38,6 +38,7 @@ Some clever design decisions were made to make the AI as fast as possible:
 - Bitboard representation for extremely fast move generation
 - Lookup-table for win-checking
 - Fast, memory-efficient game-tree architecture with custom arena allocator
+- Root parallelism using multiple web workers
 
 With these optmizations, the AI is capable of running millions of MCTS
 iterations per move, which makes it very powerful despite its rudimentary
@@ -45,7 +46,6 @@ implementation of MCTS.
 
 Some future improvements:
 
-- Root parallelism using multiple web workers
 - Incorporate Proof-number search to prune the search tree
 - Search tree reuse (have to replace the arena allocator with a pool allocator)
 - Positional analysis
@@ -57,15 +57,22 @@ Go to the deployed website: <https://ziap.github.io/uttt>
 To run the application locally:
 
 ```bash
-# Compile the WASM Modules
-./build.sh
-
 # Serve the app locally with your HTTP server of choice
 python3 -m http.server 8080
 
 # Launch the app in your browser of choice
 firefox http://localhost:8080
 ```
+
+## Compiling
+
+If you want to recompile the WASM modules, you will need:
+
+- clang (tested with version 15.0.7)
+- wasm-ld
+- a POSIX-compliant shell (tested with GNU bash version 5.2.15)
+
+Run the `build.sh` script to compile everything
 
 # License
 
