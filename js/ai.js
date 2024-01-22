@@ -1,11 +1,13 @@
 import { state, stateBuffer } from "./state.js";
 
-function createWorkers(count) {
-  const workers_promise = new Array(count)
-  for (let i = 0; i < count; ++i) {
+const workerCount = Math.max(navigator.hardwareConcurrency, 1)
+
+function createWorkers() {
+  const workers = new Array(workerCount)
+  for (let i = 0; i < workerCount; ++i) {
     const worker = new Worker('./js/worker.js')
 
-    workers_promise[i] = new Promise(resolve => {
+    workers[i] = new Promise(resolve => {
       worker.addEventListener('message', e => {
         const msg = e.data
         if (msg != 'ready') throw new Error(`Expected 'ready', got ${msg}`)
@@ -15,13 +17,11 @@ function createWorkers(count) {
     })
   }
 
-  return Promise.all(workers_promise)
+  return Promise.all(workers)
 }
 
-const workerCount = Math.max(navigator.hardwareConcurrency, 1)
-
 export async function registerAI(callback) {
-  let workers = await createWorkers(workerCount)
+  let workers = await createWorkers()
   let working = 0
 
   function workerCallback(e) {
@@ -44,8 +44,7 @@ export async function registerAI(callback) {
     working = workers.length
 
     for (const worker of workers) {
-      const arr = new Uint8Array(stateBuffer.length)
-      arr.set(stateBuffer)
+      const arr = stateBuffer.slice()
 
       const buf = arr.buffer
       worker.postMessage({ strength, buf }, [buf])
@@ -56,7 +55,7 @@ export async function registerAI(callback) {
     if (!working) return
 
     for (const worker of workers) worker.terminate()
-    workers = await createWorkers(workerCount)
+    workers = await createWorkers()
 
     for (const worker of workers) {
       worker.addEventListener("message", workerCallback)

@@ -3,21 +3,20 @@
   const decoder = new TextDecoder()
 
   function cstr(ptr) {
-    const mem_arr = new Uint8Array(memory.buffer, ptr)
+    const memArr = new Uint8Array(memory.buffer, ptr)
 
     let len = 0;
-    while (mem_arr[len]) ++len
+    while (memArr[len]) ++len
 
-    return decoder.decode(mem_arr.subarray(0, len))
+    return decoder.decode(memArr.subarray(0, len))
   }
 
+  const fullArr = new Uint8Array(memory.buffer)
   const env = {
     assert(x, str) { if (!x) throw new Error(cstr(str)) },
     dump(x) { console.log(x) },
     export_children(ptr, size) {
-      const slice = new Uint8Array(memory.buffer, ptr, size);
-      const cloned = new Uint8Array(slice)
-
+      const cloned = fullArr.slice(ptr, ptr + size)
       postMessage(cloned.buffer, [cloned.buffer])
     }
   }

@@ -2,12 +2,12 @@ let memory
 const decoder = new TextDecoder()
 
 function cstr(ptr) {
-  const mem_arr = new Uint8Array(memory.buffer, ptr)
+  const memArr = new Uint8Array(memory.buffer, ptr)
 
   let len = 0;
-  while (mem_arr[len]) ++len
+  while (memArr[len]) ++len
 
-  return decoder.decode(mem_arr.subarray(0, len))
+  return decoder.decode(memArr.subarray(0, len))
 }
 
 const env = {
