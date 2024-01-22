@@ -8,8 +8,7 @@
     let len = 0;
     while (mem_arr[len]) ++len
 
-    const bytes = mem_arr.slice(0, len)
-    return decoder.decode(bytes);
+    return decoder.decode(mem_arr.subarray(0, len))
   }
 
   const env = {

@@ -21,10 +21,11 @@ void* children_ptr() { return children; }
 
 void combine_children(u32 children_size) {
   usize count = children_size / sizeof(node_t);
+  node_t *other = children + count;
 
   for (usize i = 0; i < count; ++i) {
-    children[i].value += children[i + count].value;
-    children[i].samples += children[i + count].samples;
+    children[i].value += other[i].value;
+    children[i].samples += other[i].samples;
   }
 }
 

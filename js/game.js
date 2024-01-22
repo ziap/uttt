@@ -1,12 +1,12 @@
-import { invokeAI, stopAI } from './ai.js'
+import { registerAI } from './ai.js'
 import { state } from './state.js'
 
 const gameRoot = document.querySelector('#container')
 
 const mainGrid = document.querySelector('#main-grid')
-let mainCells = []
-let subCells = []
-let subGrids = []
+let mainCells = new Array(9)
+let subGrids = new Array(9)
+let subCells = new Array(9 * 9)
 
 for (let i = 0; i < 9; ++i) {
   const mainCell = document.createElement('div')
@@ -23,18 +23,17 @@ for (let i = 0; i < 9; ++i) {
 
       state.move(i, j)
       updateHTML()
-      AIMove()
     })
 
     subGrid.appendChild(subCell)
-    subCells.push(subCell)
+    subCells[9 * i + j] = subCell
   }
 
   mainCell.appendChild(subGrid)
   mainGrid.appendChild(mainCell)
 
-  subGrids.push(subGrid)
-  mainCells.push(mainCell)
+  subGrids[i] = subGrid
+  mainCells[i] = mainCell
 }
 
 const settingsButton = gameRoot.querySelector('#settings')
@@ -43,6 +42,8 @@ const endMessage = gameRoot.querySelector('#end-message')
 
 let playerTurn = [true, false]
 let AIStrength = 32
+
+const { invokeAI, stopAI } = await registerAI(updateHTML)
 
 function updateHTML() {
   for (const elem of mainCells) elem.className = 'main-cell'
@@ -60,7 +61,7 @@ function updateHTML() {
       case 0: {
         if (state.result) break
         if (state.lastMove != -1 && state.lastMove != i) break
-        subGrids[i].classList.add('active');
+        subGrids[i].classList.add('active')
       } break
       case 1: mainCells[i].classList.add('x'); continue
       case 2: mainCells[i].classList.add('o'); continue
@@ -78,16 +79,10 @@ function updateHTML() {
       }
     }
   }
-}
 
-async function AIMove() {
-  if (state.result || playerTurn[state.currentPlayer]) return
-
-  await invokeAI(AIStrength)
-
-  updateHTML()
-
-  if (!playerTurn[state.currentPlayer]) AIMove()
+  if (!(state.result || playerTurn[state.currentPlayer])) {
+    invokeAI(AIStrength)
+  }
 }
 
 async function reset() {
@@ -95,8 +90,6 @@ async function reset() {
 
   state.reset()
   updateHTML()
-
-  AIMove()
 }
 
 restartButton.addEventListener('click', reset)
