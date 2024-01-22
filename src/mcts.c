@@ -119,7 +119,7 @@ static void mcts_search(mcts_t *searcher, state_t state, i32 *steps) {
 
     searcher->current_node = child;
     state_move(&state, child->move.grid, child->move.cell);
-    *steps = *steps - 1;
+    *steps = *steps - 2;
   }
 
   // Expansion
@@ -129,7 +129,6 @@ static void mcts_search(mcts_t *searcher, state_t state, i32 *steps) {
     node_t *child = searcher->current_node->children;
     searcher->current_node = child;
     state_move(&state, child->move.grid, child->move.cell);
-    *steps = *steps - 1;
   }
 
   // Simulation

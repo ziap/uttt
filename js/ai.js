@@ -42,6 +42,7 @@ export async function registerAI(callback) {
 
   function invokeAI(strength) {
     working = workers.length
+
     for (const worker of workers) {
       const arr = new Uint8Array(stateBuffer.length)
       arr.set(stateBuffer)
