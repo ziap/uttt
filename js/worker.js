@@ -11,12 +11,11 @@
     return decoder.decode(memArr.subarray(0, len))
   }
 
-  const fullArr = new Uint8Array(memory.buffer)
   const env = {
     assert(x, str) { if (!x) throw new Error(cstr(str)) },
     dump(x) { console.log(x) },
     export_children(ptr, size) {
-      const cloned = fullArr.slice(ptr, ptr + size)
+      const cloned = new Uint8Array(memory.buffer, ptr, size).slice()
       postMessage(cloned.buffer, [cloned.buffer])
     }
   }
