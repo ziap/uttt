@@ -62,7 +62,7 @@ static void expand_node(node_t *node, state_t *state) {
   u32 grid_idx = state->last_move;
 
   // Also iterate over all local boards when the player can move anywhere
-  if (grid_idx == -1) {
+  if (grid_idx == -1u) {
     u32 global_board = state->boards[9];
     u32 global_mask = (~(global_board | (global_board >> 1))) & 0x15555u;
 
@@ -94,7 +94,7 @@ static result_t playout(state_t *state, rng_t *rng, i32 *steps) {
     u32 grid = state->last_move;
     
     // Select a random local board when the player can move anywhere
-    if (grid == -1) {
+    if (grid == -1u) {
       u32 mask = random_move_mask(state->boards[9], rng);
 
       grid = ctz(mask) >> 1;
