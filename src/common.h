@@ -32,7 +32,29 @@ typedef size_t usize;
 typedef float  f32;
 typedef double f64;
 
-extern void assert(bool, const char*);
+#ifdef __FILE_NAME__
+  #define ASSERT_FILE __FILE_NAME__
+#else
+  #define ASSERT_FILE __FILE__
+#endif
+
+#define ASSERT_STR_EXPAND(x) ASSERT_STR(x)
+#define ASSERT_STR(x) #x
+#define ASSERT_LINE ASSERT_STR_EXPAND(__LINE__)
+
+#define ASSERT_LOC ASSERT_FILE ":" ASSERT_LINE ": "
+
+#define assert(x, msg)                                                         \
+  do {                                                                         \
+    if ((x)) {                                                                 \
+    } else {                                                                   \
+      const char str[] = ASSERT_LOC "Assertion `" #x "` failed\n" msg "\n";    \
+      log_error(str, sizeof(str) - 1);                                         \
+      __builtin_trap();                                                        \
+    }                                                                          \
+  } while (0)
+
+extern void log_error(const char *ptr, u32 size);
 extern void dump(f32);
 
 #endif

@@ -2,17 +2,11 @@
   let memory, start
   const decoder = new TextDecoder()
 
-  function cstr(ptr) {
-    const memArr = new Uint8Array(memory.buffer, ptr)
-
-    let len = 0;
-    while (memArr[len]) ++len
-
-    return decoder.decode(memArr.subarray(0, len))
-  }
-
   const env = {
-    assert(x, str) { if (!x) throw new Error(cstr(str)) },
+    log_error(ptr, size) {
+      const memArr = new Uint8Array(memory.buffer, ptr, size)
+      console.error(decoder.decode(memArr))
+    },
     dump(x) { console.log(x) },
     export_children(ptr, size) {
       const cloned = new Uint8Array(memory.buffer, ptr, size).slice()

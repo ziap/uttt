@@ -106,7 +106,7 @@ static result_t playout(state_t *state, rng_t *rng, i32 *steps) {
     board |= (mask << state->player);
     state_replace(state, grid, ctz(mask) >> 1, board);
 
-    *steps = *steps - 1;
+    --*steps;
   }
 
   return state->result;
@@ -129,6 +129,7 @@ static void mcts_search(mcts_t *searcher, state_t state, i32 *steps) {
     node_t *child = searcher->current_node->children;
     searcher->current_node = child;
     state_move(&state, child->move.grid, child->move.cell);
+    *steps = *steps - 2;
   }
 
   // Simulation
