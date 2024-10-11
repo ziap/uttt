@@ -7,19 +7,19 @@
 typedef enum {
   PLAYER_X,
   PLAYER_O,
-} player_t;
+} Player;
 
 typedef struct {
   u32 boards[10];
 
   i8 last_move;
 
-  player_t player;
-  result_t result;
-} state_t;
+  Player player;
+  Result result;
+} State;
 
-extern void state_init(state_t *);
-extern void state_move(state_t *, u8, u8);
-extern void state_replace(state_t *, u8, u8, u32);
+extern void State_init(State *);
+extern void State_move(State *, u8, u8);
+extern void State_replace(State *, u8, u8, u32);
 
 #endif

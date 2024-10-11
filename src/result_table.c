@@ -1,7 +1,7 @@
 #include "common.h"
 #include "result_table.h"
 
-result_t RESULT_TABLE[TABLE_SIZE] = {0};
+Result RESULT_TABLE[TABLE_SIZE] = {0};
 
 void create_table(void) {
   const u8 WIN_TRIPLETS[][3] = {

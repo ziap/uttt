@@ -6,10 +6,10 @@ typedef enum {
   X_WIN,
   O_WIN,
   TIE,
-} result_t;
+} Result;
 
 #define TABLE_SIZE (1 << 18)
-extern result_t RESULT_TABLE[TABLE_SIZE];
+extern Result RESULT_TABLE[TABLE_SIZE];
 
 extern void create_table(void);
 

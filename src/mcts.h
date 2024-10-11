@@ -7,11 +7,11 @@
 #include "state.h"
 
 typedef struct {
-  node_t *current_node;
+  Node *current_node;
 
-  rng_t rng_state;
-} mcts_t;
+  RNG rng_state;
+} MCTS;
 
-extern void search(mcts_t*, state_t*, u64, i32);
+extern void search(MCTS*, State*, u64, i32, NodeArena*);
 
 #endif

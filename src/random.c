@@ -5,8 +5,8 @@
 
 // 32-bit PCG with 64-bit state
 // See: <https://www.pcg-random.org>
-u32 rand_u32(rng_t *state) {
-  rng_t oldstate = *state;
+u32 RNG_u32(RNG *state) {
+  RNG oldstate = *state;
   *state = oldstate * MUL + INC;
 
   u32 xorshifted = ((oldstate >> 18u) ^ oldstate) >> 27u;
@@ -14,12 +14,12 @@ u32 rand_u32(rng_t *state) {
   return (xorshifted >> rot) | (xorshifted << ((-rot) & 31));
 }
 
-rng_t rng_new(u64 seed) {
-  rng_t state = 0;
-  rand_u32(&state);
+RNG RNG_new(u64 seed) {
+  RNG state = 0;
+  RNG_u32(&state);
   
   state += seed;
-  rand_u32(&state);
+  RNG_u32(&state);
 
   return state;
 }

@@ -7,26 +7,34 @@
 typedef struct {
   u8 grid;
   u8 cell;
-} move_t;
+} Move;
 
-typedef struct node_t node_t;
+typedef struct Node Node;
 
-struct node_t {
-  move_t move;
+struct Node {
+  Move move;
 
-  usize children_count;
-  node_t *children;
-  node_t *parent;
+  // TODO: Switch to relative pointer
+  // alignment 8 bytes -> 4 bytes
+  // size 40 bytes -> 24 bytes
+  u32 children_count;
+  Node *children;
+  Node *parent;
 
   i32 value;
   u32 samples;
 };
 
-extern node_t node_new(i8, i8, node_t*);
+typedef struct {
+  Node *nodes;
+  u32 capacity;
+  u32 size;
+} NodeArena;
 
-// TODO: Properly make a platform abstraction
-extern node_t *nodes_head(void);
-extern void nodes_init(void);
-extern void nodes_push(i8, i8, node_t*);
+extern Node Node_new(i8, i8, Node*);
+
+extern Node *NodeArena_head(NodeArena);
+extern void NodeArena_init(NodeArena*);
+extern bool NodeArena_push(NodeArena*, Node);
 
 #endif
