@@ -2,7 +2,7 @@
 #define RESULT_H
 
 typedef enum {
-  PLAYING,
+  PLAYING = 0,
   X_WIN,
   O_WIN,
   TIE,

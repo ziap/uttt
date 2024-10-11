@@ -8,26 +8,26 @@ void State_init(State *state) {
   state->result = PLAYING;
 }
 
-void State_move(State *state, u8 grid, u8 cell) {
-  if (state->last_move != -1 && state->last_move != grid) return;
+void State_move(State *state, Move move) {
+  if (state->last_move != -1 && state->last_move != move.grid) return;
 
-  u32 board = state->boards[grid];
-  u32 new_board = board | (1 << (cell << 1 | state->player));
-  if (new_board == state->boards[grid]) return;
+  u32 board = state->boards[move.grid];
+  u32 new_board = board | (1 << (move.cell << 1 | state->player));
+  if (new_board == state->boards[move.grid]) return;
 
-  State_replace(state, grid, cell, new_board);
+  State_replace(state, move, new_board);
 }
 
-void State_replace(State *state, u8 grid, u8 cell, u32 board) {
-  state->boards[grid] = board;
+void State_replace(State *state, Move move, u32 board) {
+  state->boards[move.grid] = board;
 
   // Update global board
   Result sub_result = RESULT_TABLE[board];
   if (sub_result) {
-    state->boards[9] |= sub_result << (grid << 1);
+    state->boards[9] |= sub_result << (move.grid << 1);
     state->result = RESULT_TABLE[state->boards[9]];
   }
 
   state->player = 1 - state->player;
-  state->last_move = (state->boards[9] & (3 << (cell << 1))) ? -1 : cell;
+  state->last_move = (state->boards[9] & (3 << (move.cell << 1))) ? -1 : move.cell;
 }

@@ -11,7 +11,7 @@ export i32 player(void);
 export i32 result(void);
 
 export void init(void);
-export void move(u32, u32);
+export void move(i32, i32);
 export void reset(void);
 
 export void* children_ptr(void);

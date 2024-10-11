@@ -64,10 +64,10 @@ static bool expand_board(Node *node, u32 grid_idx, u32 board, NodeArena *arena) 
 
 static bool expand_node(Node *node, State *state, NodeArena *arena) {
   node->children = NodeArena_head(*arena);
-  u32 grid_idx = state->last_move;
+  i8 grid_idx = state->last_move;
 
   // Also iterate over all local boards when the player can move anywhere
-  if (grid_idx == -1u) {
+  if (grid_idx == -1) {
     u32 global_board = state->boards[9];
     u32 global_mask = (~(global_board | (global_board >> 1))) & 0x15555u;
 
@@ -102,10 +102,10 @@ static u32 random_move_mask(u32 board, RNG *rng) {
 
 static Result playout(State *state, RNG *rng, i32 *steps) {
   while (!state->result) {
-    u32 grid = state->last_move;
+    i8 grid = state->last_move;
     
     // Select a random local board when the player can move anywhere
-    if (grid == -1u) {
+    if (grid == -1) {
       u32 mask = random_move_mask(state->boards[9], rng);
 
       grid = ctz(mask) >> 1;
@@ -115,7 +115,7 @@ static Result playout(State *state, RNG *rng, i32 *steps) {
     u32 mask = random_move_mask(board, rng);
 
     board |= (mask << state->player);
-    State_replace(state, grid, ctz(mask) >> 1, board);
+    State_replace(state, (Move) {grid, ctz(mask) >> 1}, board);
 
     --*steps;
   }
@@ -129,7 +129,7 @@ static void mcts_search(MCTS *searcher, State state, i32 *steps, NodeArena *aren
     Node *child = select_child(searcher->current_node);
 
     searcher->current_node = child;
-    State_move(&state, child->move.grid, child->move.cell);
+    State_move(&state, child->move);
     *steps = *steps - 2;
   }
 
@@ -138,7 +138,7 @@ static void mcts_search(MCTS *searcher, State state, i32 *steps, NodeArena *aren
     if (expand_node(searcher->current_node, &state, arena)) {
       Node *child = searcher->current_node->children;
       searcher->current_node = child;
-      State_move(&state, child->move.grid, child->move.cell);
+      State_move(&state, child->move);
       *steps = *steps - 2;
     }
   }

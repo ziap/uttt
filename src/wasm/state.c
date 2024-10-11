@@ -13,7 +13,7 @@ i32 result(void) { return state.result; }
 
 void init(void) { create_table(); State_init(&state); }
 void reset(void) { State_init(&state); }
-void move(u32 grid, u32 cell) { State_move(&state, grid, cell); }
+void move(i32 grid, i32 cell) { State_move(&state, (Move) {grid, cell}); }
 
 static Node children[81 * 2];
 

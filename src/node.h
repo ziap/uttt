@@ -4,11 +4,6 @@
 #include "common.h"
 #include "state.h"
 
-typedef struct {
-  u8 grid;
-  u8 cell;
-} Move;
-
 typedef struct Node Node;
 
 struct Node {
