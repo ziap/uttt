@@ -1,6 +1,6 @@
 #include "ai.h"
 
-#define NODES_CAP (1 << 26)
+#define NODES_CAP (1 << 24)
 static Node nodes[NODES_CAP];
 
 static State state;
@@ -20,5 +20,5 @@ void ai_search(u64 seed, i32 steps) {
   search(&searcher, &state, seed, steps * (1 << 20), &arena);
 
   Node *node = searcher.current_node;
-  export_children(node->children, node->children_count * sizeof(Node));
+  export_children(node + node->children, node->children_count * sizeof(Node));
 }

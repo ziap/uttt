@@ -7,7 +7,7 @@ static void mcts_init(MCTS *searcher, u64 seed, NodeArena *arena) {
 
   searcher->current_node = NodeArena_head(*arena);
   searcher->rng_state = RNG_new(seed);
-  NodeArena_push(arena, Node_new(-1, -1, NULL));
+  NodeArena_push(arena, (Move) {-1, -1}, searcher->current_node);
 }
 
 // Upper Confidence bounds applied to Trees (UCT)
@@ -22,14 +22,14 @@ static f32 uct(Node *node, f32 t) {
 }
 
 static Node *select_child(Node *node) {
-  Node *best_child = node->children;
+  Node *best_child = node + node->children;
   if (!best_child->samples) return best_child;
 
   f32 t = fastln(node->samples);
   f32 best_uct = uct(best_child, t);
 
   for (usize i = 1; i < node->children_count; ++i) {
-    Node *child = node->children + i;
+    Node *child = node + node->children + i;
     if (!child->samples) return child;
 
     f32 child_uct = uct(child, t);
@@ -53,7 +53,7 @@ static bool expand_board(Node *node, u32 grid_idx, u32 board, NodeArena *arena) 
     u32 cell_idx = ctz(cell) >> 1;
 
     node->children_count++;
-    if (!NodeArena_push(arena, Node_new(grid_idx, cell_idx, node))) {
+    if (!NodeArena_push(arena, (Move) {grid_idx, cell_idx}, node)) {
       node->children_count = 0;
       return false;
     }
@@ -63,7 +63,7 @@ static bool expand_board(Node *node, u32 grid_idx, u32 board, NodeArena *arena) 
 }
 
 static bool expand_node(Node *node, State *state, NodeArena *arena) {
-  node->children = NodeArena_head(*arena);
+  node->children = NodeArena_head(*arena) - node;
   i8 grid_idx = state->last_move;
 
   // Also iterate over all local boards when the player can move anywhere
@@ -136,7 +136,7 @@ static void mcts_search(MCTS *searcher, State state, i32 *steps, NodeArena *aren
   // Expansion
   if (searcher->current_node->samples && !state.result) {
     if (expand_node(searcher->current_node, &state, arena)) {
-      Node *child = searcher->current_node->children;
+      Node *child = searcher->current_node + searcher->current_node->children;
       searcher->current_node = child;
       State_move(&state, child->move);
       *steps = *steps - 2;
@@ -157,10 +157,9 @@ static void mcts_search(MCTS *searcher, State state, i32 *steps, NodeArena *aren
     }
 
     current_player = 1 - current_player;
-    Node *parent = searcher->current_node->parent;
-    
-    if (!parent) break;
-    searcher->current_node = parent;
+    i32 parent = searcher->current_node->parent;
+    if (!searcher->current_node->parent) break;
+    searcher->current_node += parent;
   }
 }
 
