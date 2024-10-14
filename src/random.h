@@ -6,6 +6,5 @@
 typedef u64 RNG;
 
 extern u32 RNG_u32(RNG*);
-extern RNG RNG_new(u64);
 
 #endif

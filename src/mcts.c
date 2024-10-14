@@ -6,7 +6,7 @@ static void mcts_init(MCTS *searcher, u64 seed, NodeArena *arena) {
   NodeArena_init(arena);
 
   searcher->current_node = NodeArena_head(*arena);
-  searcher->rng_state = RNG_new(seed);
+  searcher->rng_state = seed;
   NodeArena_push(arena, (Move) {-1, -1}, searcher->current_node);
 }
 

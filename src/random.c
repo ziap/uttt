@@ -13,13 +13,3 @@ u32 RNG_u32(RNG *state) {
   u32 rot = oldstate >> 59u;
   return (xorshifted >> rot) | (xorshifted << ((-rot) & 31));
 }
-
-RNG RNG_new(u64 seed) {
-  RNG state = 0;
-  RNG_u32(&state);
-  
-  state += seed;
-  RNG_u32(&state);
-
-  return state;
-}
