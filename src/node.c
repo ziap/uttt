@@ -10,7 +10,7 @@ void NodeArena_init(NodeArena *arena) {
 
 bool NodeArena_push(NodeArena *arena, Move move, Node *parent) {
   if (arena->size < arena->capacity) {
-    i32 relative_parent = parent - (arena->nodes + arena->size);
+    u32 relative_parent = (arena->nodes + arena->size) - parent;
     arena->nodes[arena->size++] = (Node) {
       .move = move,
       .children_count = 0,

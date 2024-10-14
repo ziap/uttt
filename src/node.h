@@ -10,8 +10,8 @@ struct Node {
   Move move;
 
   u32 children_count;
-  i32 children;
-  i32 parent;
+  u32 children;
+  u32 parent;
 
   i32 value;
   u32 samples;

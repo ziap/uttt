@@ -157,9 +157,9 @@ static void mcts_search(MCTS *searcher, State state, i32 *steps, NodeArena *aren
     }
 
     current_player = 1 - current_player;
-    i32 parent = searcher->current_node->parent;
+    u32 parent = searcher->current_node->parent;
     if (!searcher->current_node->parent) break;
-    searcher->current_node += parent;
+    searcher->current_node -= parent;
   }
 }
 
