@@ -37,7 +37,6 @@ void select_child(u32 children_size) {
 
   for (usize i = 0; i < count; ++i) {
     Node *child = children + i;
-
     f32 score = (f32)child->value / (f32)child->samples;
 
     if (score > best_score) {
@@ -45,6 +44,6 @@ void select_child(u32 children_size) {
       selected = child;
     }
   }
-  
-  move(selected->move.grid, selected->move.cell);
+
+  State_move(&state, selected->move);
 }

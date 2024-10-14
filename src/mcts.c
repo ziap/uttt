@@ -115,7 +115,7 @@ static Result playout(State *state, RNG *rng, i32 *steps) {
     u32 mask = random_move_mask(board, rng);
 
     board |= (mask << state->player);
-    State_replace(state, (Move) {grid, ctz(mask) >> 1}, board);
+    State_update(state, (Move) {grid, ctz(mask) >> 1}, board);
 
     --*steps;
   }

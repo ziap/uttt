@@ -15,6 +15,7 @@ typedef struct {
 } Move;
 
 typedef struct {
+  // The last board is the global board, to make retrieval from JS easier
   u32 boards[10];
   i8 last_move;
 
@@ -23,7 +24,11 @@ typedef struct {
 } State;
 
 extern void State_init(State *);
+
+// Execute a move, create a new board then assign it to the state
 extern void State_move(State *, Move);
-extern void State_replace(State *, Move, u32);
+
+// Assign the moved board in the state with the newly created board
+extern void State_update(State *, Move, u32);
 
 #endif

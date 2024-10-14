@@ -15,10 +15,10 @@ void State_move(State *state, Move move) {
   u32 new_board = board | (1 << (move.cell << 1 | state->player));
   if (new_board == state->boards[move.grid]) return;
 
-  State_replace(state, move, new_board);
+  State_update(state, move, new_board);
 }
 
-void State_replace(State *state, Move move, u32 board) {
+void State_update(State *state, Move move, u32 board) {
   state->boards[move.grid] = board;
 
   // Update global board
