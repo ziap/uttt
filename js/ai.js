@@ -25,13 +25,13 @@ export async function registerAI(callback) {
   let working = 0
 
   function workerCallback(e) {
-    if (working == workers.length) state.set_children(e.data)
-    else state.add_children(e.data)
+    if (working == workers.length) state.setChildren(e.data)
+    else state.addChildren(e.data)
 
     working--
 
     if (!working) {
-      state.best_move(e.data.byteLength)
+      state.bestMove(e.data.byteLength)
       callback()
     }
   }

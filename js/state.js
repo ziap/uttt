@@ -24,19 +24,19 @@ const state = {
   get result() { return exports.result() },
 
   move(grid, cell) { exports.move(grid, cell) },
-  set_children(buffer) {
+  setChildren(buffer) {
     const arr = new Uint8Array(buffer)
     const slice = new Uint8Array(memory.buffer, exports.children_ptr(), arr.length)
     slice.set(arr)
   },
-  add_children(buffer) {
+  addChildren(buffer) {
     const arr = new Uint8Array(buffer)
     const slice = new Uint8Array(memory.buffer, exports.children_ptr() + arr.length, arr.length)
     slice.set(arr)
 
     exports.combine_children(arr.length)
   },
-  best_move(length) { exports.select_child(length) },
+  bestMove(length) { exports.select_child(length) },
   reset() { exports.reset() }
 }
 

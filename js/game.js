@@ -52,10 +52,10 @@ function updateHTML() {
 
   endMessage.className = ['', 'x', 'o', 'tie'][state.result]
 
-  let global_board = state.boards[9]
+  let globalBoard = state.boards[9]
   for (let i = 0; i < 9; ++i) {
-    const cell = global_board & 3
-    global_board >>= 2
+    const cell = globalBoard & 3
+    globalBoard >>= 2
 
     switch (cell) {
       case 0: {
