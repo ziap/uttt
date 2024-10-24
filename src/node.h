@@ -4,9 +4,7 @@
 #include "common.h"
 #include "state.h"
 
-typedef struct Node Node;
-
-struct Node {
+typedef struct {
   Move move;
 
   u32 children_count;
@@ -15,7 +13,7 @@ struct Node {
 
   i32 value;
   u32 samples;
-};
+} Node;
 
 typedef struct {
   Node *nodes;
