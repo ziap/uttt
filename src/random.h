@@ -5,6 +5,6 @@
 
 typedef u64 RNG;
 
-extern u32 RNG_u32(RNG*);
+extern u32 RNG_u32(RNG*, u32);
 
 #endif

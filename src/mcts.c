@@ -93,7 +93,7 @@ static u32 random_move_mask(u32 board, RNG *rng) {
   u32 mask = (~(board | (board >> 1))) & 0x15555u;
 
   // Remove a random amount of bits from the left
-  u32 idx = RNG_u32(rng) % popcnt(mask);
+  u32 idx = RNG_u32(rng, popcnt(mask));
   for (usize i = 0; i < idx; ++i) mask &= (mask - 1);
 
   // Select the leftmost bit after removal
