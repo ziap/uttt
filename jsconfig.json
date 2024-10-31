@@ -3,7 +3,6 @@
     "target": "esnext",
     "module": "esnext",
     "moduleResolution": "esnext",
-    "baseUrl": ".",
     "checkJs": true,
     "noImplicitAny": true,
     "strictNullChecks": true,
