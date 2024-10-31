@@ -1,8 +1,15 @@
 import { state, stateBuffer } from "./state.js";
+/**
+ * @typedef {import('shared').SearchMessage} SearchMessage
+ */
 
 const workerCount = Math.max(navigator.hardwareConcurrency, 1)
 
+/**
+ * @returns {Promise<Worker[]>}
+ */
 function createWorkers() {
+  /** @type {Promise<Worker>[]} */
   const workers = new Array(workerCount)
   for (let i = 0; i < workerCount; ++i) {
     const worker = new Worker('./js/worker.js')
@@ -20,10 +27,16 @@ function createWorkers() {
   return Promise.all(workers)
 }
 
+/**
+ * @param {() => void} callback
+ */
 export async function registerAI(callback) {
   let workers = await createWorkers()
   let working = 0
 
+  /**
+   * @param {MessageEvent<ArrayBuffer>} e
+   */
   function workerCallback(e) {
     if (working == workers.length) state.setChildren(e.data)
     else state.addChildren(e.data)
@@ -40,6 +53,9 @@ export async function registerAI(callback) {
     worker.addEventListener('message', workerCallback)
   }
 
+  /**
+   * @param {number} strength
+   */
   function invokeAI(strength) {
     working = workers.length
 
@@ -47,7 +63,10 @@ export async function registerAI(callback) {
       const arr = stateBuffer.slice()
 
       const buf = arr.buffer
-      worker.postMessage({ strength, buf }, [buf])
+
+      /** @type {SearchMessage} */
+      const msg = { buf, strength }
+      worker.postMessage(msg, [buf])
     }
   }
 

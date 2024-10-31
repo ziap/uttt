@@ -1,11 +1,23 @@
 import { registerAI } from './ai.js'
 import { state } from './state.js'
 
-const gameRoot = document.querySelector('#container')
+/**
+ * @param {string} msg
+ * @returns {never}
+ */
+function assertNonNull(msg = "Non null assertion failed") {
+  throw new Error(msg)
+}
 
-const mainGrid = document.querySelector('#main-grid')
+/** @type {HTMLDivElement} */
+const gameRoot = document.querySelector('#container') ?? assertNonNull()
+
+const mainGrid = document.querySelector('#main-grid') ?? assertNonNull()
+/** @type {HTMLDivElement[]} */
 let mainCells = new Array(9)
+/** @type {HTMLDivElement[]} */
 let subGrids = new Array(9)
+/** @type {HTMLDivElement[]} */
 let subCells = new Array(9 * 9)
 
 for (let i = 0; i < 9; ++i) {
@@ -36,9 +48,9 @@ for (let i = 0; i < 9; ++i) {
   mainCells[i] = mainCell
 }
 
-const settingsButton = gameRoot.querySelector('#settings')
-const restartButton = gameRoot.querySelector('#restart')
-const endMessage = gameRoot.querySelector('#end-message')
+const settingsButton = gameRoot.querySelector('#settings') ?? assertNonNull()
+const restartButton = gameRoot.querySelector('#restart') ?? assertNonNull()
+const endMessage = gameRoot.querySelector('#end-message') ?? assertNonNull()
 
 let playerTurn = [true, false]
 let AIStrength = 32
@@ -94,20 +106,25 @@ async function reset() {
 
 restartButton.addEventListener('click', reset)
 
-const settingsRoot = document.querySelector('#settings-container')
-const settingsPlayerX = settingsRoot.querySelector('#settings-player-x')
-const settingsPlayerO = settingsRoot.querySelector('#settings-player-o')
-const settingsAI = settingsRoot.querySelector('#settings-ai')
-const settingsAIDisplay = settingsRoot.querySelector('#settings-ai-display')
-const settingsSubmit = settingsRoot.querySelector('#settings-submit')
-const settingsReturn = settingsRoot.querySelector('#settings-return')
+/** @type {HTMLDivElement} */
+const settingsRoot = document.querySelector('#settings-container') ?? assertNonNull()
+/** @type {HTMLInputElement} */
+const settingsPlayerX = settingsRoot.querySelector('#settings-player-x') ?? assertNonNull()
+/** @type {HTMLInputElement} */
+const settingsPlayerO = settingsRoot.querySelector('#settings-player-o') ?? assertNonNull()
+/** @type {HTMLInputElement} */
+const settingsAI = settingsRoot.querySelector('#settings-ai') ?? assertNonNull()
+
+const settingsAIDisplay = settingsRoot.querySelector('#settings-ai-display') ?? assertNonNull()
+const settingsSubmit = settingsRoot.querySelector('#settings-submit') ?? assertNonNull()
+const settingsReturn = settingsRoot.querySelector('#settings-return') ?? assertNonNull()
 
 settingsButton.addEventListener('click', () => {
   settingsPlayerX.value = playerTurn[0] ? 'human' : 'ai'
   settingsPlayerO.value = playerTurn[1] ? 'human' : 'ai'
 
-  settingsAI.value = AIStrength
-  settingsAIDisplay.textContent = AIStrength
+  settingsAI.value = AIStrength.toString()
+  settingsAIDisplay.textContent = AIStrength.toString()
 
   settingsRoot.hidden = false
 })
@@ -125,7 +142,7 @@ settingsSubmit.addEventListener('click', () => {
 })
 
 settingsAI.addEventListener('input', (e) => {
-  settingsAIDisplay.textContent = e.target.value
+  settingsAIDisplay.textContent = (/** @type {HTMLInputElement} */ (e.target ?? assertNonNull())).value
 })
 
 settingsReturn.addEventListener('click', () => settingsRoot.hidden = true)
