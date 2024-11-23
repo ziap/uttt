@@ -2,7 +2,7 @@
 
 CC="${CC:-clang}"
 
-CFLAGS="-std=c99 -Wall -Wextra -pedantic -fshort-enums"
+CFLAGS="-std=c99 -Wall -Wextra -pedantic -fshort-enums -Wvla -Wdouble-promotion -Wno-implicit-fallthrough"
 
 WASM_CFLAGS="-O3 --target=wasm32 -flto -nostdlib -fvisibility=hidden"
 WASM_CFLAGS+=" -mbulk-memory -msimd128"
