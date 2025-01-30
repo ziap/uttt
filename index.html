@@ -7,6 +7,7 @@
     <meta name="description" content="Ultimate Tic-Tac-Toe with powerful AI">
 
     <link rel="stylesheet" href="style.css">
+    <script type="module" src="./js/game.js"></script>
     <title>Ulitmate Tic-Tac-Toe</title>
   </head>
 
@@ -48,8 +49,8 @@
         <label class="settings-item">
           AI strength
           <div>
-            <input type="range" min="1" max="256" value="32" id="settings-ai">
-            <span id="settings-ai-display">32</span>
+            <input type="range" min="1" max="256" id="settings-ai">
+            <span id="settings-ai-display"></span>
           </div>
         </label>
         
@@ -60,5 +61,4 @@
       </div>
     </div>
   </body>
-  <script type="module" src="./js/game.js"></script>
 </html>

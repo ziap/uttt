@@ -53,7 +53,7 @@ const restartButton = gameRoot.querySelector('#restart') ?? assertNonNull()
 const endMessage = gameRoot.querySelector('#end-message') ?? assertNonNull()
 
 let playerTurn = [true, false]
-let AIStrength = 32
+let AIStrength = 8
 
 const { invokeAI, stopAI } = await registerAI(updateHTML)
 
