@@ -5,7 +5,7 @@ import { state } from './state.js'
  * @param {string} msg
  * @returns {never}
  */
-function assertNonNull(msg = "Non null assertion failed") {
+function assertNonNull(msg = 'Non null assertion failed') {
   throw new Error(msg)
 }
 
@@ -141,8 +141,8 @@ settingsSubmit.addEventListener('click', () => {
   reset()
 })
 
-settingsAI.addEventListener('input', (e) => {
-  settingsAIDisplay.textContent = (/** @type {HTMLInputElement} */ (e.target ?? assertNonNull())).value
+settingsAI.addEventListener('input', ({ target }) => {
+  settingsAIDisplay.textContent = (/** @type {HTMLInputElement} */ (target ?? assertNonNull())).value
 })
 
 settingsReturn.addEventListener('click', () => settingsRoot.hidden = true)

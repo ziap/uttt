@@ -1,6 +1,6 @@
-import { state, stateBuffer } from "./state.js";
+import { state, stateBuffer } from './state.js';
 /**
- * @typedef {import('shared').SearchMessage} SearchMessage
+ * @import { SearchMessage } from "./shared";
  */
 
 const workerCount = Math.max(navigator.hardwareConcurrency, 1)
@@ -8,15 +8,16 @@ const workerCount = Math.max(navigator.hardwareConcurrency, 1)
 /**
  * @returns {Promise<Worker[]>}
  */
-function createWorkers() {
+async function createWorkers() {
   /** @type {Promise<Worker>[]} */
   const workers = new Array(workerCount)
+  const module = await WebAssembly.compileStreaming(fetch('../wasm/ai.wasm'))
   for (let i = 0; i < workerCount; ++i) {
     const worker = new Worker('./js/worker.js')
+    worker.postMessage(module)
 
     workers[i] = new Promise(resolve => {
-      worker.addEventListener('message', e => {
-        const msg = e.data
+      worker.addEventListener('message', ({ data: msg }) => {
         if (msg != 'ready') throw new Error(`Expected 'ready', got ${msg}`)
 
         resolve(worker)
@@ -37,14 +38,14 @@ export async function registerAI(callback) {
   /**
    * @param {MessageEvent<ArrayBuffer>} e
    */
-  function workerCallback(e) {
-    if (working == workers.length) state.setChildren(e.data)
-    else state.addChildren(e.data)
+  function workerCallback({ data }) {
+    if (working == workers.length) state.setChildren(data)
+    else state.addChildren(data)
 
     working--
 
     if (!working) {
-      state.bestMove(e.data.byteLength)
+      state.bestMove(data.byteLength)
       callback()
     }
   }
@@ -77,7 +78,7 @@ export async function registerAI(callback) {
     workers = await createWorkers()
 
     for (const worker of workers) {
-      worker.addEventListener("message", workerCallback)
+      worker.addEventListener('message', workerCallback)
     }
 
     working = 0

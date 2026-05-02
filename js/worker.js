@@ -1,10 +1,10 @@
 /// <reference lib="webworker" />
 
 /**
- * @typedef {import('shared').SearchMessage} SearchMessage
+ * @import { SearchMessage } from "./shared";
  */
 
-;(async () => {
+addEventListener('message', async ({ data }) => {
   /** @type {WebAssembly.Memory} */
   let memory
   const decoder = new TextDecoder()
@@ -40,8 +40,9 @@
    * @prop {() => void} init
    */
 
-  const wasm = await WebAssembly.instantiateStreaming(fetch('../wasm/ai.wasm'), { env })
-  const exports = /** @type {WorkerExport} */ (wasm.instance.exports)
+  const module = /** @type{WebAssembly.Module} */(data)
+  const instance = await WebAssembly.instantiate(module, { env })
+  const exports = /** @type {WorkerExport} */ (instance.exports)
 
   memory = exports.memory
 
@@ -58,4 +59,4 @@
   })
 
   postMessage('ready')
-})()
+}, { once: true })
