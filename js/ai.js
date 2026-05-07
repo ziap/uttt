@@ -11,7 +11,7 @@ const workerCount = Math.max(navigator.hardwareConcurrency, 1)
 async function createWorkers() {
   /** @type {Promise<Worker>[]} */
   const workers = new Array(workerCount)
-  const module = await WebAssembly.compileStreaming(fetch('../wasm/ai.wasm'))
+  const module = await WebAssembly.compileStreaming(fetch('./wasm/ai.wasm'))
   for (let i = 0; i < workerCount; ++i) {
     const worker = new Worker('./js/worker.js')
     worker.postMessage(module)
