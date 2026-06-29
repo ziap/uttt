@@ -1,6 +1,7 @@
 #!/bin/sh -xe
 
 CC="${CC:-clang}"
+CC_WASM="${CC_WASM:-$CC}"
 
 CFLAGS="-std=c99 -Wall -Wextra -pedantic -fshort-enums -Wvla -Wdouble-promotion -Wno-implicit-fallthrough"
 
@@ -21,5 +22,5 @@ SRCS="$(ls src/*.c)"
 for SRC in $(ls src/wasm/*.c)
 do
   OUTPUT="wasm/$(basename ${SRC%.*}).wasm"
-  $CC $CFLAGS $WASM_FLAGS -o $OUTPUT $SRC $SRCS
+  $CC_WASM $CFLAGS $WASM_FLAGS -o $OUTPUT $SRC $SRCS
 done
